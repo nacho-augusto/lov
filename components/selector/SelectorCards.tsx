@@ -18,8 +18,8 @@ const DIRECTIONS: Dir[] = [
   {
     href: "/cumbre-nocturna",
     name: "Cumbre Nocturna",
-    tag: "Cine inmersivo · 3D",
-    desc: "Asciendes el macizo en un plano único, de la hora azul al amanecer naranja en la cima.",
+    tag: "Cinematográfico · La Maroma",
+    desc: "Asciendes La Maroma nevada —el techo de Málaga— al hacer scroll, de los campos a la cima.",
     variant: "dark",
   },
   {
