@@ -1,0 +1,347 @@
+.section {
+  background: var(--noche);
+}
+
+/* ---------------- the sky chart ---------------- */
+
+.chartWrap {
+  position: relative;
+  width: min(100% - 2 * var(--gutter), 125vh, 1240px);
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  .chartWrap {
+    width: min(100% - 2 * 150px, 125vh, 1240px);
+  }
+}
+
+.chart {
+  position: relative;
+  aspect-ratio: 1000 / 720;
+  background: radial-gradient(120% 92% at 50% 100%, #0e1a33 0%, #080d17 46%, var(--noche) 78%);
+  /* the sky dissolves into the page at the sides and at the top */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 9%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 9%);
+  mask-composite: intersect;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.band polyline {
+  fill: none;
+  stroke: #c9d5ff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke-opacity 0.6s ease;
+}
+
+.band polyline:nth-child(1) {
+  stroke-opacity: 0.012;
+}
+.band polyline:nth-child(2) {
+  stroke-opacity: 0.016;
+}
+.band polyline:nth-child(3) {
+  stroke-opacity: 0.022;
+}
+.band polyline:nth-child(4) {
+  stroke-opacity: 0.03;
+}
+
+.band[data-on="1"] polyline:nth-child(1) {
+  stroke-opacity: 0.025;
+}
+.band[data-on="1"] polyline:nth-child(2) {
+  stroke-opacity: 0.034;
+}
+.band[data-on="1"] polyline:nth-child(3) {
+  stroke-opacity: 0.045;
+}
+.band[data-on="1"] polyline:nth-child(4) {
+  stroke-opacity: 0.06;
+}
+
+.field circle {
+  fill: #dfe6ff;
+}
+
+.lines line {
+  stroke: #fff4e0;
+  stroke-opacity: 0.2;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition:
+    stroke-opacity 0.4s ease,
+    stroke 0.4s ease;
+}
+
+.lines g[data-on="1"] line {
+  stroke: #ffd9a8;
+  stroke-opacity: 0.9;
+}
+
+.glow {
+  transition:
+    r 0.4s ease,
+    opacity 0.4s ease;
+}
+
+.rim {
+  stroke: rgba(255, 244, 224, 0.4);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+
+.summit circle:first-child {
+  transition: r 0.4s ease;
+  animation: lamp 3.4s ease-in-out infinite;
+}
+
+@keyframes lamp {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.summitLabel {
+  position: absolute;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.summitLabel span:first-child {
+  font-family: var(--display);
+  font-weight: 760;
+  font-stretch: 66%;
+  font-size: clamp(13px, 1.45vw, 20px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--lumen);
+  white-space: nowrap;
+}
+
+.summitLabel span:last-child {
+  font-family: var(--mono);
+  font-size: clamp(9px, 0.85vw, 12px);
+  color: var(--ambar);
+  font-variant-numeric: tabular-nums;
+}
+
+.skyLabel {
+  position: absolute;
+  transform: translateY(-50%);
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 2px;
+  background: none;
+  font-family: var(--mono);
+  font-size: clamp(10px, 0.9vw, 12px);
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.skyLabel::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 1px;
+  margin-right: 7px;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.skyLabel:hover,
+.skyLabel[aria-pressed="true"] {
+  color: var(--lumen);
+}
+
+.skyLabel[aria-pressed="true"]::before {
+  background: var(--naranja);
+  opacity: 1;
+}
+
+.note {
+  position: absolute;
+  right: 2.5%;
+  top: 4%;
+  width: min(30%, 300px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.noteName {
+  font-family: var(--display);
+  font-weight: 780;
+  font-stretch: 64%;
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--lumen);
+}
+
+.noteText {
+  font-size: clamp(14px, 1.1vw, 16px);
+  line-height: 1.5;
+  color: var(--lumen-80);
+}
+
+.caption {
+  margin: 14px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  line-height: 1.5;
+  color: var(--lumen-40);
+}
+
+/* ---------------- the three summits ---------------- */
+
+.peaks {
+  list-style: none;
+  margin: clamp(56px, 8vh, 96px) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: clamp(24px, 3.2vw, 52px);
+  row-gap: 64px;
+}
+
+.peak {
+  padding-top: 24px;
+  border-top: 1px solid var(--lumen-12);
+}
+
+.peakName {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 820;
+  font-stretch: 60%;
+  font-size: clamp(38px, 3.8vw, 58px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: var(--lumen);
+}
+
+.peakElev {
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: clamp(26px, 2.6vw, 38px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ambar);
+  font-variant-numeric: tabular-nums;
+}
+
+.peakFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 32px;
+  margin: 24px 0 0;
+}
+
+.peakFacts dt {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  color: var(--lumen-40);
+}
+
+.peakFacts dd {
+  margin: 4px 0 0;
+  font-size: 16px;
+  color: var(--lumen);
+}
+
+.peakWhy {
+  margin: 20px 0 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--lumen-80);
+  text-wrap: pretty;
+}
+
+.peakNight {
+  margin: 18px 0 0;
+  padding-left: 14px;
+  border-left: 2px solid var(--naranja);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--lumen);
+}
+
+.peakRoute {
+  margin: 18px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--lumen-40);
+}
+
+/* ---------------- small screens ---------------- */
+
+@media (max-width: 900px) {
+  .note {
+    position: static;
+    width: auto;
+    margin: 20px var(--gutter) 0;
+  }
+
+  .peaks {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .chartWrap {
+    width: 100%;
+  }
+
+  .chart {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 7%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%),
+      linear-gradient(to bottom, transparent 0, #000 7%);
+    mask-composite: intersect;
+  }
+
+  .skyLabel {
+    padding: 4px 5px;
+  }
+
+  .skyLabel::before {
+    width: 6px;
+    margin-right: 4px;
+  }
+
+  .caption {
+    margin-inline: var(--gutter);
+  }
+}

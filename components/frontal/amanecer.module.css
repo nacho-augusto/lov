@@ -1,0 +1,340 @@
+/* ============================================================
+   AMANECER — a sticky scene driven by --p (0 → 1 while scrolling it).
+   ============================================================ */
+
+.dawn {
+  --p: 0;
+  position: relative;
+  height: 250vh;
+  background: #131f38;
+}
+
+.anchor {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.dawn[data-static="1"] .anchor {
+  top: 0 !important;
+}
+
+.sticky {
+  --pre: clamp(0, calc(var(--p) * 2.5), 1);
+  --day: clamp(0, calc((var(--p) - 0.2) * 2.2), 1);
+  --rise: clamp(0, calc((var(--p) - 0.12) * 2.3), 1);
+  --cta: clamp(0, calc((var(--p) - 0.46) * 3.4), 1);
+  --stars: clamp(0, calc(1 - var(--p) * 2.3), 1);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+/* reduced motion: one calm, finished sunrise */
+.dawn[data-static="1"] {
+  height: auto;
+}
+.dawn[data-static="1"] .sticky {
+  position: relative;
+  height: auto;
+  min-height: 100svh;
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+}
+
+.pre,
+.day,
+.stars {
+  will-change: opacity;
+}
+
+.night {
+  /* continues the blue hour of the previous chapter */
+  background: linear-gradient(to bottom, #131f38 0%, #0d172b 50%, #17223d 100%);
+}
+
+.pre {
+  opacity: var(--pre);
+  background: linear-gradient(to bottom, #131d36 0%, #1d2343 42%, #452c4f 68%, #87393c 86%, #c2470c 100%);
+}
+
+.day {
+  opacity: var(--day);
+  background: linear-gradient(
+    to bottom,
+    #172045 0%,
+    #33295a 30%,
+    #7d3b58 54%,
+    #d25e2f 76%,
+    #ffa75e 89%,
+    #ffd6a4 100%
+  );
+}
+
+.stars {
+  position: absolute;
+  inset: 0 0 35% 0;
+  opacity: var(--stars);
+  background-image:
+    radial-gradient(1.2px 1.2px at 8% 14%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 17% 32%, #dfe7ff 50%, transparent 52%),
+    radial-gradient(1.4px 1.4px at 26% 9%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 33% 24%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 41% 41%, #dfe7ff 50%, transparent 52%),
+    radial-gradient(1.3px 1.3px at 47% 12%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 55% 29%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 62% 6%, #dfe7ff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 69% 21%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 76% 38%, #fff 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 83% 11%, #dfe7ff 50%, transparent 52%),
+    radial-gradient(1px 1px at 90% 27%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 95% 8%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 4% 44%, #dfe7ff 50%, transparent 52%),
+    radial-gradient(1px 1px at 37% 52%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 88% 48%, #fff 50%, transparent 52%);
+}
+
+/* ---------- bitácora ---------- */
+
+.logWrap {
+  position: absolute;
+  z-index: 2;
+  left: var(--gutter);
+  top: clamp(56px, 9vh, 104px);
+  font-family: var(--mono);
+  font-stretch: 87.5%;
+}
+
+/* the hours are a story device: say so, quietly, above the log */
+.logNote {
+  margin: 0 0 6px;
+  max-width: 34ch;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--lumen-60);
+  opacity: clamp(0, calc((var(--p) - 0.02) * 10), 1);
+}
+
+.log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 2.1;
+  color: var(--lumen-80);
+}
+
+.log li {
+  opacity: 0;
+}
+/* in step with the HUD clock: 06:41 at p≈.04, 06:58 at p≈.25, 07:12 at p≈.42 */
+.log li:nth-child(1) {
+  opacity: clamp(0, calc((var(--p) - 0.02) * 10), 1);
+}
+.log li:nth-child(2) {
+  opacity: clamp(0, calc((var(--p) - 0.22) * 10), 1);
+}
+.log li:nth-child(3) {
+  opacity: clamp(0, calc((var(--p) - 0.39) * 10), 1);
+}
+
+.logAt {
+  display: inline-block;
+  width: 5.2ch;
+  color: var(--ambar);
+}
+
+/* ---------- the invitation ---------- */
+
+.cta {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 22%;
+  width: min(100% - 2 * var(--gutter), 860px);
+  text-align: center;
+  opacity: var(--cta);
+  transform: translate(-50%, calc((1 - var(--cta)) * 26px));
+  pointer-events: none;
+}
+
+.dawn[data-cta="1"] .cta {
+  pointer-events: auto;
+}
+
+.cta:focus-within {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.ctaTitle {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 860;
+  font-stretch: 56%;
+  font-size: clamp(54px, 8.2vw, 138px);
+  line-height: 0.84;
+  letter-spacing: -0.006em;
+  text-transform: uppercase;
+  color: var(--lumen);
+  text-wrap: balance;
+  text-shadow: 0 2px 40px rgba(20, 12, 30, 0.35);
+}
+
+.ctaText {
+  margin: clamp(18px, 3vh, 28px) auto 0;
+  max-width: 42ch;
+  font-size: clamp(17px, 1.4vw, 20px);
+  line-height: 1.5;
+  color: var(--lumen-80);
+  text-wrap: pretty;
+}
+
+.ctaLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(22px, 3.6vh, 34px);
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 230px;
+  padding: 14px 20px 13px;
+  border-radius: 2px;
+  text-align: left;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.primary {
+  background: var(--lumen);
+  color: #160f09;
+  box-shadow: 0 10px 40px rgba(30, 10, 0, 0.25);
+}
+
+.primary:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.secondary {
+  border: 1px solid rgba(255, 244, 224, 0.45);
+  color: var(--lumen);
+  background: rgba(20, 14, 34, 0.18);
+}
+
+.secondary:hover {
+  border-color: var(--lumen);
+  transform: translateY(-1px);
+}
+
+.linkLabel {
+  font-family: var(--display);
+  font-weight: 700;
+  font-stretch: 82%;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.linkValue {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-stretch: 87.5%;
+  opacity: 0.72;
+}
+
+/* the club's email isn't confirmed yet */
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 7px 3px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  font-stretch: 87.5%;
+  line-height: 1;
+  vertical-align: 2px;
+  opacity: 0.8;
+}
+
+/* ---------- horizon: the logo's ridge + its rising sun ---------- */
+
+.horizon {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 46%;
+  /* let the sun's glow spill above the SVG box instead of ending in a hard line */
+  overflow: visible;
+}
+
+.sunGroup {
+  transform: translateY(calc((1 - var(--rise)) * 340px));
+}
+
+.glow {
+  opacity: var(--rise);
+}
+
+.ridge {
+  fill: var(--papel);
+}
+
+@media (max-width: 640px) {
+  /* small screens: first the log, then (once it has gone) the invitation */
+  .sticky {
+    --cta: clamp(0, calc((var(--p) - 0.6) * 3.6), 1);
+  }
+
+  .logWrap {
+    opacity: clamp(0, calc((0.58 - var(--p)) * 12), 1);
+  }
+
+  .cta {
+    top: 14%;
+  }
+
+  .ctaLinks {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary,
+  .secondary {
+    min-width: 0;
+  }
+
+  .horizon {
+    height: 34%;
+  }
+}
+
+@media (max-height: 700px) and (min-width: 641px) {
+  .cta {
+    top: 12%;
+  }
+  .ctaTitle {
+    font-size: clamp(48px, 6.4vw, 100px);
+  }
+}

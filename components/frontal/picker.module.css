@@ -1,0 +1,104 @@
+.picker {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+}
+
+.options {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.option {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+}
+
+.option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.face {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 62px;
+  padding: 10px 12px;
+  border: 1px solid var(--lumen-12);
+  border-radius: 2px;
+  color: var(--lumen-60);
+  background: rgba(5, 7, 10, 0.35);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.3s ease;
+}
+
+.option:hover .face {
+  border-color: var(--lumen-40);
+  color: var(--lumen);
+}
+
+.option input:checked + .face {
+  color: #120d08;
+  background: var(--lumen);
+  border-color: var(--lumen);
+  box-shadow:
+    0 0 0 1px rgba(255, 244, 224, 0.4),
+    0 0 26px rgba(255, 228, 186, 0.35);
+}
+
+.option input:focus-visible + .face {
+  outline: 2px solid var(--naranja);
+  outline-offset: 3px;
+}
+
+.lm {
+  font-weight: 500;
+}
+
+.modeName {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: 80%;
+  letter-spacing: 0.01em;
+}
+
+.unit {
+  align-self: center;
+  margin-left: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--lumen-40);
+}
+
+@media (max-width: 420px) {
+  .face {
+    min-width: 0;
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+}

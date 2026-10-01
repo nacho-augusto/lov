@@ -1,0 +1,217 @@
+/* ============================================================
+   FRONTAL — shared tokens, base typography and chapter furniture.
+   The page is the night; light is the only accent.
+   ============================================================ */
+
+.root {
+  /* night */
+  --noche: #05070a;
+  --azul: #0b1524;
+  --azul-2: #12213a;
+  /* light */
+  --lumen: #fff4e0;
+  --lumen-80: rgba(255, 244, 224, 0.8);
+  --lumen-60: rgba(255, 244, 224, 0.66);
+  /* the dimmest text tone that still clears 4.5:1 on the night */
+  --lumen-40: rgba(255, 244, 224, 0.54);
+  --lumen-12: rgba(255, 244, 224, 0.12);
+  --lumen-06: rgba(255, 244, 224, 0.06);
+  /* club */
+  --naranja: #f26b1d;
+  --ambar: #ff8a3d;
+  --brasa: #c2470c;
+  /* dim greys */
+  --ceniza: #8b93a1;
+  --humo: #4b5262;
+  /* daylight ending */
+  --papel: #fff3e4;
+  --tinta: #17110c;
+
+  --display: var(--font-frontal-display), "Arial Narrow", system-ui, sans-serif;
+  --mono: var(--font-frontal-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --gutter: clamp(20px, 5vw, 64px);
+  --maxw: 1160px;
+
+  /* headlamp power → sizes of every beam on the page */
+  --beam-r: clamp(135px, 25vmin, 285px);
+  --beam-i: 0.9;
+  --pool-r: 220px;
+  --spot-r: 150px;
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--noche);
+  color: var(--lumen);
+  font-family: var(--display);
+  font-size: 18px;
+  line-height: 1.55;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+.root[data-lm="100"] {
+  --beam-r: clamp(96px, 15.5vmin, 175px);
+  --beam-i: 0.66;
+  --pool-r: 150px;
+  --spot-r: 100px;
+}
+.root[data-lm="600"] {
+  --beam-r: clamp(165px, 31vmin, 345px);
+  --beam-i: 1;
+  --pool-r: 290px;
+  --spot-r: 205px;
+}
+.root[data-lm="1000"] {
+  --beam-r: clamp(210px, 41vmin, 470px);
+  --beam-i: 1;
+  --pool-r: 390px;
+  --spot-r: 290px;
+}
+
+.root ::selection {
+  background: var(--naranja);
+  color: var(--noche);
+}
+
+.root :where(a, button, input, label, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--naranja);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* ---------- layout ---------- */
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--maxw));
+  margin-inline: auto;
+}
+
+@media (min-width: 1024px) {
+  /* leave room for the HUD rail on the right (kept symmetric so the page stays centred) */
+  .wrap {
+    width: min(100% - 2 * max(var(--gutter), 150px), var(--maxw));
+  }
+}
+
+.chapter {
+  position: relative;
+  padding-block: clamp(96px, 15vh, 180px);
+}
+
+/* ---------- chapter head: a ghost clock behind a condensed title ---------- */
+
+.chHead {
+  position: relative;
+  margin-bottom: clamp(40px, 7vh, 80px);
+}
+
+.chClock {
+  display: block;
+  font-family: var(--mono);
+  font-weight: 200;
+  font-stretch: 75%;
+  font-size: clamp(76px, 15vw, 232px);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  color: var(--lumen-06);
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.chTitle {
+  position: relative;
+  margin: clamp(-64px, -4.4vw, -26px) 0 0;
+  max-width: 15ch;
+  font-family: var(--display);
+  font-weight: 820;
+  font-stretch: 60%;
+  font-size: clamp(46px, 7.6vw, 124px);
+  line-height: 0.88;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--lumen);
+}
+
+.chLead {
+  max-width: 40ch;
+  margin: clamp(22px, 3vh, 34px) 0 0;
+  font-size: clamp(19px, 1.55vw, 23px);
+  line-height: 1.5;
+  color: var(--lumen-80);
+  text-wrap: pretty;
+}
+
+/* ---------- small type ---------- */
+
+.mono {
+  font-family: var(--mono);
+  font-stretch: 87.5%;
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* show the instruction that matches the device */
+.onHover {
+  display: none;
+}
+.onTouch {
+  display: inline;
+}
+@media (hover: hover) and (pointer: fine) {
+  .onHover {
+    display: inline;
+  }
+  .onTouch {
+    display: none;
+  }
+}
+
+/* ---------- the warm pool under the pointer ---------- */
+
+.pool {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: calc(var(--pool-r) * 2);
+  height: calc(var(--pool-r) * 2);
+  margin: calc(var(--pool-r) * -1) 0 0 calc(var(--pool-r) * -1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 236, 205, 0.085),
+    rgba(255, 222, 176, 0.04) 45%,
+    rgba(255, 210, 160, 0) 100%
+  );
+  transition:
+    opacity 0.6s ease,
+    width 0.5s ease,
+    height 0.5s ease,
+    margin 0.5s ease;
+  will-change: transform;
+}
+
+.pool[data-on="1"] {
+  opacity: 1;
+}
+
+.root[data-day="1"] .pool {
+  opacity: 0;
+}

@@ -1,0 +1,67 @@
+.spot {
+  margin: 0;
+}
+
+.frame {
+  --r: 0px;
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #0a0d12;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* the night over the photo, with a hole where the headlamp points */
+.dark {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 9, 0.88);
+  -webkit-mask-image: radial-gradient(
+    circle var(--r) at var(--mx) var(--my),
+    transparent 0%,
+    transparent 36%,
+    rgba(0, 0, 0, 0.55) 70%,
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    circle var(--r) at var(--mx) var(--my),
+    transparent 0%,
+    transparent 36%,
+    rgba(0, 0, 0, 0.55) 70%,
+    #000 100%
+  );
+  transition: opacity 0.5s ease;
+}
+
+.warm {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle var(--r) at var(--mx) var(--my),
+    rgba(255, 222, 176, 0.13),
+    rgba(255, 222, 176, 0) 75%
+  );
+}
+
+/* keyboard: focusing the row lights the whole photo */
+[data-spotrow]:focus-within .dark {
+  opacity: 0;
+}
+
+.caption {
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  line-height: 1.5;
+  color: var(--lumen-40);
+}

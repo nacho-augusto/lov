@@ -1,0 +1,74 @@
+.noche {
+  background: var(--noche);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: clamp(56px, 9vh, 96px);
+}
+
+/* Read with the headlamp: each word lights up as the scroll reaches it. */
+.manifesto {
+  grid-column: 4 / span 9;
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-stretch: 94%;
+  font-size: clamp(25px, 2.7vw, 41px);
+  line-height: 1.32;
+  letter-spacing: -0.006em;
+  color: var(--lumen);
+  text-wrap: pretty;
+}
+
+.manifesto span {
+  opacity: clamp(0.13, calc(1 + (var(--p, 0) * (var(--n) + 6) - var(--i) - 2) / 5), 1);
+}
+
+.log {
+  grid-column: 4 / span 9;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: clamp(20px, 3vw, 44px);
+  row-gap: 28px;
+}
+
+.entry {
+  padding-top: 18px;
+  border-top: 1px dashed var(--lumen-12);
+}
+
+.entry dt {
+  font-family: var(--mono);
+  font-weight: 300;
+  font-stretch: 87.5%;
+  font-size: clamp(26px, 2.6vw, 40px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ambar);
+  font-variant-numeric: tabular-nums;
+}
+
+.entry dd {
+  margin: 14px 0 0;
+  max-width: 30ch;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--lumen-60);
+}
+
+@media (max-width: 900px) {
+  .manifesto,
+  .log {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .log {
+    grid-template-columns: 1fr;
+  }
+}

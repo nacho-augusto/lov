@@ -1,0 +1,488 @@
+/* ============================================================
+   HUD — the night's instrument panel (navigation).
+   Desktop: a rail on the right edge, a dashed trail with checkpoints.
+   Mobile: a pill at the bottom (clock · battery · lumens) + a chapter sheet.
+   ============================================================ */
+
+.hud {
+  font-family: var(--mono);
+  color: var(--lumen);
+}
+
+/* hidden on the start line (the hero has its own instruments) */
+.hud[data-boot="0"] .rail,
+.hud[data-boot="0"] .pill {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s linear 0.4s;
+}
+
+.hud[data-boot="1"] .rail,
+.hud[data-boot="1"] .pill {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.6s ease,
+    color 0.6s ease,
+    background 0.6s ease;
+}
+
+.hud[data-day="1"] {
+  --lumen: #1d150e;
+  --lumen-80: rgba(29, 21, 14, 0.82);
+  --lumen-60: rgba(29, 21, 14, 0.7);
+  --lumen-40: rgba(29, 21, 14, 0.6);
+  --lumen-12: rgba(29, 21, 14, 0.16);
+  --lumen-06: rgba(29, 21, 14, 0.07);
+  --noche: #fff3e4;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------------- desktop rail ---------------- */
+
+.rail {
+  position: fixed;
+  z-index: 40;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  color: var(--lumen);
+  transition: color 0.6s ease;
+}
+
+.readout {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.clock {
+  font-size: 23px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--lumen);
+}
+
+.alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  font-variant-numeric: tabular-nums;
+}
+
+.alt svg {
+  width: 12px;
+  height: 8px;
+  color: var(--naranja);
+}
+
+.ticksWrap {
+  position: relative;
+}
+
+.ticks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ticks a {
+  display: grid;
+  grid-template-columns: auto auto 11px;
+  align-items: center;
+  justify-content: end;
+  column-gap: 10px;
+  height: 30px;
+  color: var(--lumen-40);
+  text-decoration: none;
+  font-size: 11px;
+  font-stretch: 87.5%;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease;
+}
+
+.ticks a:hover {
+  color: var(--lumen);
+}
+
+.name {
+  padding: 3px 7px;
+  border-radius: 2px;
+  background: rgba(5, 7, 10, 0.86);
+  opacity: 0;
+  transform: translateX(6px);
+  white-space: nowrap;
+  color: var(--lumen-80);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.rail:hover .name,
+.rail:focus-within .name {
+  opacity: 1;
+  transform: none;
+}
+
+/* the name of a new chapter shows for a moment, then the rail goes quiet again */
+.ticks li[data-active] .name {
+  animation: nameFlash 2.8s ease;
+}
+
+@keyframes nameFlash {
+  0% {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  12%,
+  72% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+}
+
+.ticks li[data-active] a {
+  color: var(--lumen);
+}
+
+.ticks li[data-past] a {
+  color: var(--lumen-60);
+}
+
+.dot {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: var(--noche);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.ticks li[data-past] .dot {
+  background: var(--lumen-60);
+  border-color: transparent;
+}
+
+.ticks li[data-active] .dot {
+  background: var(--naranja);
+  border-color: var(--naranja);
+}
+
+/* the dashed trail between checkpoints, and you on it */
+.track {
+  position: absolute;
+  right: 5px;
+  top: 15px;
+  bottom: 15px;
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, var(--lumen-40) 0 3px, transparent 3px 8px);
+}
+
+.mover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  will-change: transform;
+}
+
+.marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 17px;
+  height: 17px;
+  margin: -8.5px 0 0 -8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fff 0 18%,
+    rgba(255, 222, 176, 0.95) 26%,
+    rgba(242, 107, 29, 0.42) 48%,
+    rgba(242, 107, 29, 0) 70%
+  );
+  z-index: 2;
+}
+
+.lamp {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-items: end;
+  align-items: center;
+  gap: 10px 8px;
+  font-size: 10.5px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  font-variant-numeric: tabular-nums;
+}
+
+.batt {
+  display: inline-flex;
+}
+
+.battBody {
+  position: relative;
+  display: inline-block;
+  width: 22px;
+  height: 11px;
+  padding: 1.5px;
+  border: 1px solid var(--lumen-60);
+  border-radius: 2.5px;
+}
+
+.battBody::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 3px;
+  width: 2px;
+  height: 3px;
+  border-radius: 0 1px 1px 0;
+  background: var(--lumen-60);
+}
+
+.battFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--lumen);
+  transform-origin: left center;
+}
+
+.battPct {
+  min-width: 4.2ch;
+}
+
+/* the battery runs low just before dawn */
+.hud[data-low="1"] .battFill {
+  background: var(--naranja);
+}
+
+.hud[data-low="1"] .battPct {
+  color: var(--naranja);
+}
+
+.lm {
+  grid-column: 1 / -1;
+  font: inherit;
+  font-size: 10.5px;
+  color: var(--lumen);
+  background: var(--lumen-06);
+  border: 1px solid var(--lumen-12);
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.lm:hover {
+  border-color: var(--naranja);
+  color: var(--naranja);
+}
+
+/* ---------------- mobile pill + sheet ---------------- */
+
+.pill {
+  position: fixed;
+  z-index: 40;
+  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  height: 46px;
+  padding: 0 4px;
+  gap: 2px;
+  color: var(--lumen);
+  background: rgba(5, 7, 10, 0.8);
+  border: 1px solid var(--lumen-12);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition:
+    background 0.6s ease,
+    color 0.6s ease;
+}
+
+.hud[data-day="1"] .name {
+  background: rgba(255, 243, 228, 0.9);
+}
+
+.hud[data-day="1"] .pill,
+.hud[data-day="1"] .sheet {
+  background: rgba(255, 243, 228, 0.86);
+  box-shadow: 0 10px 30px rgba(90, 40, 0, 0.18);
+}
+
+.pillClock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 10px 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.pillClock svg {
+  width: 10px;
+  height: 6px;
+  transition: transform 0.3s ease;
+}
+
+.pillClock svg[data-open="1"] {
+  transform: rotate(180deg);
+}
+
+.pillBatt {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 22px;
+  padding: 0 9px;
+  border-left: 1px solid var(--lumen-12);
+  font-size: 10.5px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  font-variant-numeric: tabular-nums;
+}
+
+.pillLm {
+  height: 38px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lumen-06);
+  color: var(--lumen);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sheet {
+  position: fixed;
+  z-index: 40;
+  left: 12px;
+  right: 12px;
+  bottom: calc(max(12px, env(safe-area-inset-bottom)) + 56px);
+  padding: 10px 6px 14px;
+  background: rgba(5, 7, 10, 0.95);
+  border: 1px solid var(--lumen-12);
+  border-radius: 18px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  animation: sheetIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+@keyframes sheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.sheet ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sheet a {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 9px 14px;
+  color: var(--lumen-60);
+  text-decoration: none;
+}
+
+.sheet li[data-active] a {
+  color: var(--lumen);
+}
+
+.sheetTime {
+  width: 5ch;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet li[data-active] .sheetTime {
+  color: var(--naranja);
+}
+
+.sheetName {
+  font-family: var(--display);
+  font-weight: 780;
+  font-stretch: 62%;
+  font-size: 27px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.sheetBack {
+  display: block;
+  margin: 8px 14px 0;
+  padding-top: 13px;
+  border-top: 1px solid var(--lumen-12);
+  font-size: 11px;
+  color: var(--lumen-60);
+  text-decoration: none;
+}
+
+@media (min-width: 1024px) {
+  .rail {
+    display: flex;
+  }
+  .pill,
+  .sheet {
+    display: none !important;
+  }
+}

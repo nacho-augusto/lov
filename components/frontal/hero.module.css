@@ -1,0 +1,490 @@
+/* ============================================================
+   HERO — the panorama in the dark, a headlamp beam that reveals it,
+   a line of headlamps climbing the zig-zag.
+   ============================================================ */
+
+.hero {
+  --fx: 0.56;
+  --fy: 0.5;
+  position: relative;
+  height: 100svh;
+  min-height: 600px;
+  overflow: hidden;
+  container-type: size;
+  isolation: isolate;
+  background: var(--noche);
+}
+
+@media (max-aspect-ratio: 3/2) {
+  .hero {
+    --fx: 0.66;
+  }
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .hero {
+    --fx: 0.82;
+  }
+}
+
+/* A box with the image's aspect ratio that covers the hero (object-fit: cover by
+   hand), so overlays drawn in image space stay aligned at every viewport. */
+.stage {
+  position: absolute;
+  left: calc(var(--fx) * 100%);
+  top: calc(var(--fy) * 100%);
+  width: max(100cqw, 100cqh * 2.357143);
+  aspect-ratio: 3168 / 1344;
+  transform: translate(calc(var(--fx) * -100%), calc(var(--fy) * -100%));
+}
+
+.plate {
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---------- the beam: a soft elliptical window onto the lit layer ---------- */
+
+/* a zero-size anchor on the beam's rest point; JS translates it */
+.beamPos {
+  position: absolute;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+.beam {
+  position: absolute;
+  left: calc(var(--beam-r) * -1.15);
+  top: calc(var(--beam-r) * -1);
+  width: calc(var(--beam-r) * 2.3);
+  height: calc(var(--beam-r) * 2);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(
+    closest-side,
+    #000 0%,
+    #000 22%,
+    rgba(0, 0, 0, 0.86) 40%,
+    rgba(0, 0, 0, 0.52) 62%,
+    rgba(0, 0, 0, 0.17) 83%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    closest-side,
+    #000 0%,
+    #000 22%,
+    rgba(0, 0, 0, 0.86) 40%,
+    rgba(0, 0, 0, 0.52) 62%,
+    rgba(0, 0, 0, 0.17) 83%,
+    transparent 100%
+  );
+  will-change: transform;
+  animation: lampOn 1.15s linear 0.45s forwards;
+  transition:
+    left 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    top 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    width 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    height 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.beamInner {
+  position: absolute;
+  left: calc(var(--beam-r) * 1.15);
+  top: var(--beam-r);
+  /* same box as the stage (container units of the hero) */
+  width: max(100cqw, 100cqh * 2.357143);
+  aspect-ratio: 3168 / 1344;
+  opacity: var(--beam-i);
+  will-change: transform;
+  transition:
+    left 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    top 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.55s ease;
+}
+
+.halo {
+  position: absolute;
+  left: calc(var(--beam-r) * -1.95);
+  top: calc(var(--beam-r) * -1.7);
+  width: calc(var(--beam-r) * 3.9);
+  height: calc(var(--beam-r) * 3.4);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 228, 186, 0.12),
+    rgba(255, 210, 156, 0.05) 46%,
+    rgba(255, 190, 130, 0) 100%
+  );
+  will-change: opacity;
+  animation: lampOn 1.15s linear 0.45s forwards;
+  transition:
+    left 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    top 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    width 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
+    height 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* click… flicker… on */
+@keyframes lampOn {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.85;
+  }
+  16% {
+    opacity: 0.08;
+  }
+  27% {
+    opacity: 0.95;
+  }
+  33% {
+    opacity: 0.3;
+  }
+  48%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.snake {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ---------- a few real stars that twinkle ---------- */
+
+.twinkles span {
+  position: absolute;
+  width: calc(11px * var(--s));
+  height: calc(11px * var(--s));
+  margin: calc(-5.5px * var(--s)) 0 0 calc(-5.5px * var(--s));
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 8%, rgba(214, 228, 255, 0.26) 22%, transparent 60%);
+  opacity: 0;
+  animation: twinkle var(--d) ease-in-out var(--delay) infinite;
+}
+
+.twinkles span::before,
+.twinkles span::after {
+  content: "";
+  position: absolute;
+  left: -45%;
+  top: 50%;
+  width: 190%;
+  height: 1px;
+  margin-top: -0.5px;
+  background: linear-gradient(90deg, transparent, rgba(232, 240, 255, 0.38), transparent);
+}
+
+.twinkles span::after {
+  transform: rotate(90deg);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+}
+
+.hero[data-paused="1"] .twinkles span,
+.hero[data-paused="1"] .colon {
+  animation-play-state: paused;
+}
+
+/* ---------- shooting star ---------- */
+
+.meteor {
+  position: absolute;
+  z-index: 1;
+  left: var(--mx, 40%);
+  top: var(--my, 12%);
+  width: 170px;
+  height: 1.5px;
+  margin-left: -170px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 250, 236, 0.95));
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 100% 50%;
+  transform: rotate(var(--ma, 160deg));
+}
+
+.meteor[data-go="1"] {
+  animation: meteor 1.05s cubic-bezier(0.25, 0.1, 0.55, 1) forwards;
+}
+
+@keyframes meteor {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--ma, 160deg)) translateX(0) scaleX(0.25);
+  }
+  18% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--ma, 160deg)) translateX(300px) scaleX(1);
+  }
+}
+
+/* ---------- legibility + seam into the next chapter ---------- */
+
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(85% 70% at 4% 18%, rgba(5, 7, 10, 0.55) 0%, rgba(5, 7, 10, 0) 62%),
+    linear-gradient(to bottom, rgba(5, 7, 10, 0) 64%, rgba(5, 7, 10, 0.7) 90%, var(--noche) 100%);
+}
+
+/* ---------- copy ---------- */
+
+.top {
+  position: absolute;
+  z-index: 3;
+  top: 24px;
+  left: var(--gutter);
+  right: var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.logo {
+  height: 36px;
+  width: auto;
+}
+
+.back {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.back:hover {
+  color: var(--lumen);
+}
+
+.copy {
+  position: absolute;
+  z-index: 3;
+  left: var(--gutter);
+  top: clamp(104px, 19vh, 205px);
+  width: min(58vw, 860px);
+  transform: translate3d(0, calc(var(--hp, 0) * -70px), 0);
+  opacity: calc(1 - var(--hp, 0) * 1.5);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 860;
+  font-stretch: 56%;
+  font-size: clamp(64px, 10.6vw, 186px);
+  line-height: 0.8;
+  letter-spacing: -0.008em;
+  text-transform: uppercase;
+  color: var(--lumen);
+  text-shadow: 0 0 40px rgba(5, 7, 10, 0.5);
+}
+
+.title span {
+  display: block;
+}
+
+.lead {
+  margin: clamp(22px, 3.4vh, 34px) 0 0;
+  max-width: 35ch;
+  font-size: clamp(17px, 1.32vw, 20px);
+  line-height: 1.5;
+  color: var(--lumen-80);
+  text-wrap: pretty;
+  /* stays legible when the beam lights the rocks behind it */
+  text-shadow:
+    0 1px 2px rgba(5, 7, 10, 0.75),
+    0 0 18px rgba(5, 7, 10, 0.85);
+}
+
+.picker legend {
+  text-shadow: 0 1px 8px rgba(5, 7, 10, 0.9);
+}
+
+/* the clock of this page tells a story, not a record */
+.storyNote {
+  margin: 16px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  line-height: 1.5;
+  color: var(--lumen-60);
+  text-shadow: 0 1px 8px rgba(5, 7, 10, 0.9);
+}
+
+.hint {
+  color: var(--lumen);
+}
+
+.onHover {
+  display: none;
+}
+.onTouch {
+  display: inline;
+}
+@media (hover: hover) and (pointer: fine) {
+  .onHover {
+    display: inline;
+  }
+  .onTouch {
+    display: none;
+  }
+}
+
+.picker {
+  margin-top: clamp(22px, 3.6vh, 36px);
+}
+
+.watch {
+  position: absolute;
+  z-index: 3;
+  left: var(--gutter);
+  bottom: 30px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  font-variant-numeric: tabular-nums;
+}
+
+.watchTime {
+  font-size: 15px;
+  color: var(--lumen);
+}
+
+.colon {
+  animation: blink 2s steps(1, end) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.12;
+  }
+}
+
+.cue {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  color: var(--lumen-60);
+  text-decoration: none;
+}
+
+.cue::after {
+  content: "";
+  width: 7px;
+  height: 46px;
+  background:
+    radial-gradient(circle, #fff 0 1.4px, rgba(255, 220, 170, 0.75) 2.4px, transparent 3.5px) 0 -7px / 7px 7px
+      no-repeat,
+    repeating-linear-gradient(to bottom, var(--lumen-40) 0 3px, transparent 3px 7px) 3px 0 / 1px 100% no-repeat;
+  animation: descend 2.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes descend {
+  from {
+    background-position:
+      0 -7px,
+      3px 0;
+  }
+  to {
+    background-position:
+      0 46px,
+      3px 0;
+  }
+}
+
+.cue:hover {
+  color: var(--lumen);
+}
+
+/* ---------- small screens and portrait tablets: title on the sky, words on the rocks ---------- */
+
+@media (max-width: 640px) {
+  .logo {
+    height: 28px;
+  }
+}
+
+@media (max-width: 640px), (max-aspect-ratio: 4/5) {
+  .copy {
+    top: 84px;
+    bottom: 34px;
+    right: var(--gutter);
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .title {
+    font-size: min(16.6vw, 190px);
+    line-height: 0.82;
+  }
+
+  .copyBottom {
+    padding-top: 16px;
+  }
+
+  .lead {
+    font-size: clamp(15.5px, 2.4vw, 20px);
+    line-height: 1.45;
+    max-width: 36ch;
+  }
+
+  .watch,
+  .cue {
+    display: none;
+  }
+}
+
+@media (max-height: 640px) and (min-width: 641px) {
+  .copy {
+    top: 88px;
+  }
+  .title {
+    font-size: clamp(56px, 8.4vw, 130px);
+  }
+}

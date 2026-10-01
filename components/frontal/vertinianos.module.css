@@ -1,0 +1,244 @@
+.section {
+  --warm: 0;
+  background: linear-gradient(to bottom, var(--noche) 0%, #08101c 38%, #0d182b 72%, #131f38 100%);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 56px;
+  align-items: start;
+}
+
+/* ---------- the club's card ---------- */
+
+.card {
+  grid-column: 1 / span 5;
+  margin: 0;
+}
+
+.card div {
+  display: grid;
+  grid-template-columns: 9em minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px dashed var(--lumen-12);
+}
+
+.card div:last-child {
+  border-bottom: 1px dashed var(--lumen-12);
+}
+
+.card dt {
+  padding-top: 4px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-stretch: 87.5%;
+  line-height: 1.5;
+  color: var(--lumen-40);
+}
+
+.card dd {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--lumen-80);
+}
+
+/* ---------- photos at blue hour, warming towards dawn ---------- */
+
+.photos {
+  grid-column: 7 / span 6;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.photo {
+  margin: 0;
+}
+
+.a {
+  grid-column: 1 / span 4;
+  grid-row: 1 / span 2;
+}
+
+.b {
+  grid-column: 5 / span 2;
+  grid-row: 1;
+}
+
+.c {
+  grid-column: 5 / span 2;
+  grid-row: 2;
+}
+
+.b figcaption,
+.c figcaption {
+  display: none;
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #0d182b;
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(calc(0.1 + 0.9 * var(--warm))) brightness(calc(0.48 + 0.52 * var(--warm)));
+  will-change: filter;
+}
+
+.frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(165deg, rgba(46, 78, 150, 0.5), rgba(18, 28, 58, 0.3));
+  opacity: calc(1 - var(--warm));
+}
+
+.photo figcaption {
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-stretch: 87.5%;
+  color: var(--lumen-40);
+}
+
+/* ---------- las normas de la fila ---------- */
+
+.rules {
+  margin-top: clamp(96px, 14vh, 160px);
+}
+
+.rulesTitle {
+  margin: 0 0 44px;
+  font-family: var(--display);
+  font-weight: 780;
+  font-stretch: 64%;
+  font-size: clamp(28px, 2.6vw, 38px);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--lumen);
+}
+
+.lamps {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.lamps::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 9px;
+  height: 1px;
+  background: repeating-linear-gradient(to right, var(--lumen-12) 0 4px, transparent 4px 10px);
+}
+
+.lamp {
+  position: relative;
+  padding-top: 42px;
+}
+
+.bulb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  border: 1px solid var(--lumen-40);
+  background: #0b1424;
+  transition:
+    background 0.5s ease,
+    border-color 0.5s ease,
+    box-shadow 0.8s ease;
+}
+
+.lamp[data-on="1"] .bulb {
+  border-color: transparent;
+  background: radial-gradient(circle, #fff 0 24%, #ffe2b8 44%, rgba(242, 107, 29, 0.7) 72%, rgba(242, 107, 29, 0.2) 100%);
+  box-shadow: 0 0 26px 6px rgba(255, 196, 130, 0.28);
+}
+
+.lampTitle {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 760;
+  font-stretch: 70%;
+  font-size: clamp(22px, 2vw, 28px);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--lumen-60);
+  transition: color 0.6s ease;
+}
+
+.lamp[data-on="1"] .lampTitle {
+  color: var(--lumen);
+}
+
+.lampDesc {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--lumen-60);
+}
+
+.tagline {
+  margin: clamp(104px, 15vh, 170px) 0 0 25%;
+  max-width: 17ch;
+  font-family: var(--display);
+  font-weight: 300;
+  font-stretch: 74%;
+  font-size: clamp(40px, 5.6vw, 90px);
+  line-height: 1;
+  letter-spacing: -0.012em;
+  color: var(--lumen);
+  text-wrap: balance;
+}
+
+@media (max-width: 960px) {
+  .card,
+  .photos {
+    grid-column: 1 / -1;
+  }
+
+  .lamps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 48px;
+  }
+
+  .lamps::before {
+    display: none;
+  }
+
+  .tagline {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .card div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .lamps {
+    grid-template-columns: 1fr;
+    row-gap: 36px;
+  }
+}

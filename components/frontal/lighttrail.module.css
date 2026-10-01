@@ -1,0 +1,47 @@
+.wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #05070a;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.trail path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 3.4s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+
+.wrap[data-drawn="1"] .trail path {
+  stroke-dashoffset: 0;
+}
+
+.labels {
+  opacity: 0;
+  transition: opacity 0.9s ease 2.6s;
+}
+
+.wrap[data-drawn="1"] .labels {
+  opacity: 1;
+}
+
+.name {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 760;
+  font-stretch: 68%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  fill: #fff4e0;
+}
+
+.alt {
+  font-family: var(--mono);
+  font-size: 10px;
+  fill: rgba(255, 244, 224, 0.62);
+}
