@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ChargeItem, type ChargeRowData } from "@/components/admin/ChargeRow";
 import { MemberFields } from "@/components/admin/MemberFields";
+import { Notice } from "@/components/admin/Notice";
 import { PageHead } from "@/components/admin/PageHead";
 import s from "@/components/admin/admin.module.css";
 import { currentSeason, formatDate, fullName, todayISO } from "@/lib/admin/format";
+import { moneyMessages } from "@/lib/admin/messages";
+import { eur, periodicityLabels, type Periodicity } from "@/lib/admin/money";
 import { requireAdmin } from "@/lib/admin/session";
 import { createClient } from "@/lib/supabase/server";
+import { addMemberFee, endMemberFee } from "../../cuotas/actions";
 import { saveLicence, setMemberLeft, setRequirementStatus, updateMember } from "../actions";
 
 export const metadata: Metadata = { title: "Ficha de miembro" };
@@ -39,6 +44,14 @@ interface Requirement {
   requirement_templates: { name: string; sort: number } | null;
 }
 
+interface MemberFee {
+  id: string;
+  starts_on: string;
+  ends_on: string | null;
+  amount_cents_override: number | null;
+  fee_types: { name: string; default_amount_cents: number; periodicity: Periodicity } | null;
+}
+
 interface Licence {
   id: string;
   season: number;
@@ -62,6 +75,8 @@ export default async function MemberPage({
 
   const canWrite = me.permissions.has("members.write");
   const canSeePrivate = me.permissions.has("members.sensitive");
+  const canSeeFees = me.permissions.has("fees.read");
+  const canWriteFees = me.permissions.has("fees.write");
   const season = currentSeason();
   const supabase = await createClient();
 
@@ -77,6 +92,13 @@ export default async function MemberPage({
       .order("season", { ascending: false, nullsFirst: true }),
     supabase.from("federation_licences").select("*").eq("member_id", id).order("season", { ascending: false }),
   ]);
+  const [{ data: fees }, { data: charges }, { data: feeTypes }] = canSeeFees
+    ? await Promise.all([
+        supabase.from("member_fees").select("id, starts_on, ends_on, amount_cents_override, fee_types(name, default_amount_cents, periodicity)").eq("member_id", id).order("starts_on"),
+        supabase.from("charge_status").select("id, member_id, concept, amount_cents, paid_cents, outstanding_cents, due_on, status, waived").eq("member_id", id).order("due_on", { ascending: false }).limit(24),
+        supabase.from("fee_types").select("id, name").eq("active", true).order("name"),
+      ])
+    : [{ data: [] }, { data: [] }, { data: [] }];
   if (!member) notFound();
 
   const requirements = ((reqs ?? []) as unknown as Requirement[]).sort(
@@ -85,6 +107,9 @@ export default async function MemberPage({
   const licenceList = (licences ?? []) as Licence[];
   const thisSeasonLicence = licenceList.find((l) => l.season === season);
   const message = messages[ok ?? error ?? ""];
+  const returnTo = `/admin/miembros/${id}`;
+  const memberFees = (fees ?? []) as unknown as MemberFee[];
+  const memberCharges = (charges ?? []) as unknown as ChargeRowData[];
 
   return (
     <>
@@ -94,10 +119,12 @@ export default async function MemberPage({
         actions={<Link href="/admin/miembros" className={s.ghostButton}>Volver</Link>}
       />
 
-      {message && (
+      {message ? (
         <p className={s.notice} data-tone={ok ? "ok" : "error"} role={ok ? "status" : "alert"}>
           {message}
         </p>
+      ) : (
+        <Notice ok={ok} error={error} messages={moneyMessages} />
       )}
 
       <div className={s.columns}>
@@ -162,6 +189,80 @@ export default async function MemberPage({
               <p className={s.emptyText}>Sin trámites.</p>
             )}
           </section>
+
+          {canSeeFees && (
+            <section className={s.block} aria-labelledby="cuotas">
+              <header className={s.blockHead}>
+                <h2 id="cuotas" className={s.blockTitle}>Cuotas</h2>
+              </header>
+              {memberFees.length > 0 ? (
+                <ul className={`${s.ledger} ${s.ledgerTwo}`}>
+                  {memberFees.map((f) => (
+                    <li key={f.id} data-inactive={f.ends_on ? "" : undefined}>
+                      <span>
+                        <span className={s.strong}>{f.fee_types?.name}</span>
+                        <span className={s.adminMeta}>
+                          {" · "}
+                          {f.fee_types ? `${periodicityLabels[f.fee_types.periodicity].toLowerCase()} · ` : ""}
+                          {eur(f.amount_cents_override ?? f.fee_types?.default_amount_cents)}
+                          {f.amount_cents_override ? " (precio especial)" : ""}
+                          {f.ends_on ? ` · hasta ${formatDate(f.ends_on)}` : ` · desde ${formatDate(f.starts_on)}`}
+                        </span>
+                      </span>
+                      {canWriteFees && !f.ends_on ? (
+                        <form action={endMemberFee}>
+                          <input type="hidden" name="id" value={f.id} />
+                          <input type="hidden" name="return_to" value={returnTo} />
+                          <button type="submit" className={s.linkButton}>Finalizar</button>
+                        </form>
+                      ) : (
+                        <span />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={s.emptyText}>No tiene cuotas asignadas.</p>
+              )}
+              {canWriteFees && member.active && (feeTypes ?? []).length > 0 && (
+                <details className={s.adminEdit} style={{ marginTop: 10 }}>
+                  <summary className={s.linkButton}>Asignar cuota</summary>
+                  <form action={addMemberFee} className={s.formStack}>
+                    <input type="hidden" name="member_id" value={member.id} />
+                    <input type="hidden" name="return_to" value={returnTo} />
+                    <label className={s.field}>
+                      <span>Tipo de cuota</span>
+                      <select name="fee_type_id" className={s.input}>
+                        {(feeTypes ?? []).map((t) => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className={s.fieldRow}>
+                      <label className={s.field}>
+                        <span>Desde</span>
+                        <input name="starts_on" type="date" defaultValue={todayISO()} className={s.input} />
+                      </label>
+                      <label className={s.field}>
+                        <span>Precio especial (€)</span>
+                        <input name="amount" inputMode="decimal" className={s.input} placeholder="Opcional" />
+                      </label>
+                    </div>
+                    <div>
+                      <button type="submit" className={s.secondaryButton}>Asignar</button>
+                    </div>
+                  </form>
+                </details>
+              )}
+              {memberCharges.length > 0 && (
+                <ul className={s.chargeList}>
+                  {memberCharges.map((ch) => (
+                    <ChargeItem key={ch.id} c={ch} canWrite={canWriteFees} returnTo={returnTo} />
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
 
           <section className={s.block} aria-labelledby="licencias">
             <header className={s.blockHead}>

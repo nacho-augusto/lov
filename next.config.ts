@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
     "postprocessing",
     "maath",
   ],
+  experimental: {
+    // Admin receipts are uploaded through Server Actions (capped at 4 MB in the action).
+    serverActions: { bodySizeLimit: "5mb" },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     // Next 16 requires an explicit allowlist; hero plates use 85–90, the rest 75.

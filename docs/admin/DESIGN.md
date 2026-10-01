@@ -278,6 +278,7 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 | 1. Members | Member CRUD, join/leave, onboarding checklist, licences | Board can migrate the current member list |
 |  | **Status 2026-10-01:** done and tested end to end with a throwaway session: list/search, alta with checklist, record (sensitive data split, owner/secretary only), licences, baja/reactivation, open season. `club` exposed in the Data API in-database (see `db/README.md`). | |
 | 2. Money | Fee types, assignments, charge generation, payments → ledger, ledger, budgets, CSV | A full fee cycle runs end to end and balances match |
+|  | **Status 2026-10-01:** done and tested end to end: fee types (any periodicity), per-member assignments with special prices, period charge generation, partial payments booked to the ledger automatically, waiving, ledger with private receipts, budget vs actual, CSV export. | |
 | 3. Emails | Templates, manual sends, log, automatic reminder rules (cron) | Overdue members receive one reminder; log shows it |
 | 4. Grants | Grants, requirement checklist, documents, expense linking, deadline alerts | A 2026 grant can be prepared and justified in the panel |
 | 5. League | Monthly grid entry, rankings, ranges, comparison, charts | Monthly update takes < 5 min |

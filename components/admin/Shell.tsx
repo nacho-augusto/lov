@@ -11,8 +11,8 @@ function navFor(admin: AdminSession): NavItem[] {
   const items: (NavItem & { show: boolean })[] = [
     { label: "Inicio", href: "/admin", show: true },
     { label: "Miembros", href: "/admin/miembros", show: can("members.read") },
-    { label: "Cuentas", href: null, show: can("accounts.read") },
-    { label: "Cuotas", href: null, show: can("fees.read") },
+    { label: "Cuentas", href: "/admin/cuentas", show: can("accounts.read") },
+    { label: "Cuotas", href: "/admin/cuotas", show: can("fees.read") },
     { label: "Subvenciones", href: null, show: can("grants.read") },
     { label: "Liga interna", href: null, show: can("league.read") },
     { label: "Comunicaciones", href: null, show: can("comms.read") },
