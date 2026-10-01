@@ -21,7 +21,14 @@ insert into club.invitations (email, roles) values ('someone@example.com', '{own
 
 ## Project settings the app needs
 
-1. **Data API → Exposed schemas:** add `club`.
+1. **Expose `club` in the Data API.** In bluchia-dev this is done in-database (it overrides
+   the dashboard list, so keep the list complete if Bluchia ever changes it):
+   ```sql
+   alter role authenticator set pgrst.db_schemas = 'public, graphql_public, club';
+   notify pgrst, 'reload config';
+   -- undo: alter role authenticator reset pgrst.db_schemas; notify pgrst, 'reload config';
+   ```
+   In a dedicated project, use Settings → Data API → Exposed schemas instead.
 2. **Authentication → URL configuration → Redirect URLs:** add
    `http://localhost:3000/admin/auth/callback` (and the production URL later).
 3. **Authentication → Providers → Google** (optional): enable with a Google OAuth client.
