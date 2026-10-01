@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   ],
   images: {
     formats: ["image/avif", "image/webp"],
+    // Next 16 requires an explicit allowlist; hero plates use 85–90, the rest 75.
+    qualities: [60, 75, 85, 90],
   },
 };
 

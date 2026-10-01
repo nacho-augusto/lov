@@ -15,9 +15,13 @@ export const club = {
   federation: "FADMES",
   federationNumber: "020788",
   // Community voice
+  nickname: "LOV",
+  igBio: "Club deportivo de actividades de montaña",
   memberTerm: "vertinianos",
   memberTermSingular: "vertiniano",
   tagline: "La otra vertiente empieza donde acaba el asfalto.",
+  // What the club does, phrased only with facts from its posts (no invented schedule).
+  rhythm: "Entrenos en grupo, salidas a la sierra y carreras por toda Andalucía y más allá.",
   // Contact — TODO: replace with the club's real address before publishing
   contactEmail: "info@laotravertiente.es",
   // Socials
