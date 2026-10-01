@@ -484,7 +484,7 @@
 
 .figures {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   margin-bottom: 32px;
   border-block: 1px solid var(--a-line);
 }
@@ -1364,4 +1364,12 @@ select.input {
 .chargeActions .popoverBody {
   left: 0;
   right: auto;
+}
+
+a.figure {
+  color: inherit;
+  text-decoration: none;
+}
+a.figure:hover .figureLabel {
+  color: var(--a-accent-text);
 }
