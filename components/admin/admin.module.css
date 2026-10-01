@@ -1470,3 +1470,21 @@ a.figure:hover .figureLabel {
 .tableScroll {
   overflow-x: auto;
 }
+
+/* ---------- Communications ---------- */
+
+.mailPreview {
+  padding: 18px 20px;
+  border: 1px solid var(--a-line);
+  border-left: 4px solid var(--a-accent);
+  background: var(--a-panel);
+}
+.mailSubject {
+  margin: 0 0 12px;
+  font-weight: 700;
+}
+.mailBody {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}

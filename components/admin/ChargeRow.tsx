@@ -76,6 +76,11 @@ function ChargeActions({ c, returnTo }: { c: ChargeRowData; returnTo: string }) 
           </form>
         </details>
       )}
+      {(c.status === "overdue" || c.status === "pending" || c.status === "partial") && (
+        <Link href={`/admin/comunicaciones?plantilla=fee_reminder&miembro=${c.member_id}`} className={s.linkButton}>
+          Recordar
+        </Link>
+      )}
       {c.status !== "paid" && (
         <form action={setChargeWaived} className={s.inline}>
           <input type="hidden" name="id" value={c.id} />

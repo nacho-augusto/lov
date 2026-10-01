@@ -15,7 +15,7 @@ function navFor(admin: AdminSession): NavItem[] {
     { label: "Cuotas", href: "/admin/cuotas", show: can("fees.read") },
     { label: "Subvenciones", href: "/admin/subvenciones", show: can("grants.read") },
     { label: "Liga interna", href: "/admin/liga", show: can("league.read") },
-    { label: "Comunicaciones", href: null, show: can("comms.read") },
+    { label: "Comunicaciones", href: "/admin/comunicaciones", show: can("comms.read") },
     { label: "Administradores", href: "/admin/ajustes/administradores", show: can("admins.manage") },
   ];
   return items.filter((i) => i.show).map(({ label, href }) => ({ label, href }));
