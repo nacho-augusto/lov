@@ -33,3 +33,7 @@ insert into club.invitations (email, roles) values ('someone@example.com', '{own
    `http://localhost:3000/admin/auth/callback` (and the production URL later).
 3. **Authentication → Providers → Google** (optional): enable with a Google OAuth client.
    In production also disable "Allow new users to sign up".
+4. **Authentication → Email → "Confirm email"** must stay on. Invitations can only be
+   claimed from an email-link/OTP or Google session on an account without a password
+   (`0007_claim_hardening.sql`), but confirmed emails are still part of the check.
+5. **`ADMIN_ORIGIN`** env var: the panel's public origin; sign-in links are built from it.

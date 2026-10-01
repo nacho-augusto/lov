@@ -14,7 +14,7 @@ insert into club.invitations (email, roles) values ('test-owner@club.test', '{ow
 
 -- 1. Outsider: claim fails and every table reads empty.
 set local role authenticated;
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b2","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000b2","role":"authenticated","amr":[{"method":"otp","timestamp":1}]}', true);
 do $$ begin
   if club.claim_invitation() then raise exception 'outsider claimed an invitation'; end if;
   if exists (select 1 from club.admin_users) then raise exception 'outsider reads admins'; end if;
@@ -30,7 +30,7 @@ exception when insufficient_privilege then null;
 end $$;
 
 -- 2. Owner claims the invitation and gets every permission.
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000a1","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000a1","role":"authenticated","amr":[{"method":"otp","timestamp":1}]}', true);
 do $$ begin
   if not club.claim_invitation() then raise exception 'owner could not claim'; end if;
   if not club.claim_invitation() then raise exception 'second claim should still be true'; end if;
@@ -48,7 +48,7 @@ do $$ begin
 exception when insufficient_privilege then null;
 end $$;
 
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000c3","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000c3","role":"authenticated","amr":[{"method":"otp","timestamp":1}]}', true);
 do $$ begin
   if not club.claim_invitation() then raise exception 'treasurer could not claim'; end if;
   if club.has_permission('admins.manage') then raise exception 'treasurer can manage admins'; end if;
@@ -72,16 +72,16 @@ do $$ begin
 end $$;
 
 -- 4. Owner deactivates the treasurer; the treasurer loses all access.
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000a1","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000a1","role":"authenticated","amr":[{"method":"otp","timestamp":1}]}', true);
 update club.admin_users set active = false where id = '00000000-0000-4000-8000-0000000000c3';
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000c3","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000c3","role":"authenticated","amr":[{"method":"otp","timestamp":1}]}', true);
 do $$ begin
   if club.claim_invitation() then raise exception 'deactivated admin still active'; end if;
   if exists (select 1 from club.admin_users) then raise exception 'deactivated admin reads admins'; end if;
 end $$;
 
 -- 5. The last owner cannot remove their own owner role (checked at commit time).
-select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000a1","role":"authenticated"}', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000000a1","role":"authenticated","amr":[{"method":"otp","timestamp":1}]}', true);
 do $$ begin
   if (select count(*) from club.audit_log) = 0 then raise exception 'audit log is empty'; end if;
 end $$;
