@@ -137,21 +137,26 @@ export async function prepareGrantUpload(grantId: string, fileName: string) {
 export async function registerGrantDocument(input: { grantId: string; requirementId: string | null; path: string; fileName: string; size: number }) {
   await requireAdmin("grants.write");
   const { grantId, requirementId, path, fileName, size } = input;
-  if (!isUuid(grantId) || (requirementId !== null && !isUuid(requirementId)) || !path.startsWith(`${grantId}/`)) {
+  // Only paths shaped like the ones prepareGrantUpload hands out.
+  if (!isUuid(grantId) || (requirementId !== null && !isUuid(requirementId))) return { error: "guardar" };
+  const pathOk = new RegExp(`^${grantId}/[0-9a-f-]{36}-[\\w.-]{1,100}$`, "i").test(path);
+  if (!pathOk) {
     return { error: "guardar" };
   }
   const supabase = await createClient();
+  if (requirementId) {
+    const { data: req } = await supabase.from("grant_requirements").select("id").eq("id", requirementId).eq("grant_id", grantId).maybeSingle();
+    if (!req) return { error: "guardar" };
+  }
   const { error } = await supabase.from("grant_documents").insert({
     grant_id: grantId,
     requirement_id: requirementId,
     path,
     file_name: fileName.slice(0, 200),
-    size_bytes: size,
+    size_bytes: Number.isFinite(size) ? Math.max(0, Math.round(size)) : null,
   });
-  if (error) {
-    await supabase.storage.from("club-grants").remove([path]);
-    return { error: "guardar" };
-  }
+  // On failure nothing is deleted: the path may belong to another document.
+  if (error) return { error: "guardar" };
   revalidatePath(`${LIST}/${grantId}`);
   return { ok: true };
 }

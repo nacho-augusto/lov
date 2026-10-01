@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const { data: isAdmin, error } = await supabase.rpc("claim_invitation");
   if (error) console.error("[admin] claim_invitation failed", error.code);
   if (!isAdmin) {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: "local" });
     return NextResponse.redirect(`${origin}/admin/sin-acceso`);
   }
   return NextResponse.redirect(`${origin}/admin`);

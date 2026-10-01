@@ -5,10 +5,13 @@ import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
+// The sign-in link must point at our own origin, never one derived from the request.
 async function callbackUrl() {
+  const configured = process.env.ADMIN_ORIGIN;
+  if (configured) return `${configured.replace(/\/$/, "")}/admin/auth/callback`;
+  if (process.env.NODE_ENV === "production") throw new Error("ADMIN_ORIGIN is not set");
   const h = await headers();
-  const origin = h.get("origin") ?? `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
-  return `${origin}/admin/auth/callback`;
+  return `http://${h.get("host")}/admin/auth/callback`;
 }
 
 // Email sign-in link. Never creates arbitrary accounts: a new auth user is only
@@ -61,6 +64,7 @@ export async function signInWithGoogle() {
 
 export async function signOut() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  // Local scope: leaving the panel must not sign the user out of other apps sharing this auth.
+  await supabase.auth.signOut({ scope: "local" });
   redirect("/admin/login");
 }
