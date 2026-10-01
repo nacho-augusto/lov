@@ -3,7 +3,7 @@ import { ProfileChart, Spark } from "@/components/admin-maqueta/charts";
 import {
   MAROMA_M, effortKm, league, months, monthsLong, num, sumRange,
 } from "@/components/admin-maqueta/data";
-import s from "@/components/admin-maqueta/admin.module.css";
+import s from "@/components/admin/admin.module.css";
 
 // Selected range: Jul–Sep 2026, compared with the previous three months (Apr–Jun).
 const FROM = 9;

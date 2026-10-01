@@ -1,9 +1,9 @@
 import { Shell } from "@/components/admin-maqueta/Shell";
-import { PeakSilhouette } from "@/components/admin-maqueta/marks";
+import { PeakSilhouette } from "@/components/admin/marks";
 import {
   MAROMA_M, balance, deadlines, eur, league, licences, movements, num, pendingCharges,
 } from "@/components/admin-maqueta/data";
-import s from "@/components/admin-maqueta/admin.module.css";
+import s from "@/components/admin/admin.module.css";
 
 export default function AdminMockHome() {
   const pendingTotal = pendingCharges.reduce((a, c) => a + c.amount, 0);

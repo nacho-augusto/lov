@@ -1,4 +1,4 @@
-import s from "./admin.module.css";
+import s from "@/components/admin/admin.module.css";
 
 // Cumulative club effort drawn as an elevation profile: the season is a climb.
 // `from`/`to` are month indices of the selected range, shaded in sun orange.

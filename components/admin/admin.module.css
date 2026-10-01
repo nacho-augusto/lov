@@ -956,3 +956,153 @@ tr[data-top] .pos {
     overflow-x: auto;
   }
 }
+
+/* ---------- Panel: notices, forms, admins ---------- */
+
+.notice {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--a-line-strong);
+  background: var(--a-sunken);
+  font-size: 0.92rem;
+  text-align: left;
+}
+.notice[data-tone="ok"] {
+  border-left-color: var(--a-up);
+}
+.notice[data-tone="error"] {
+  border-left-color: var(--a-accent);
+  color: var(--a-text);
+}
+
+button.signOut {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.formStack {
+  display: grid;
+  gap: 14px;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  color: var(--a-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.field .input {
+  letter-spacing: normal;
+  text-transform: none;
+  font-size: 0.95rem;
+  color: var(--a-text);
+}
+
+.roleChecks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.roleCheck {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--a-line);
+  background: var(--a-panel);
+  cursor: pointer;
+}
+.roleCheck:has(input:checked) {
+  border-color: var(--a-accent);
+  background: var(--a-accent-soft);
+}
+.roleCheck input {
+  margin-top: 3px;
+  accent-color: var(--orange);
+}
+.roleCheck span {
+  display: grid;
+}
+.roleCheck small {
+  color: var(--a-muted);
+  font-size: 0.8rem;
+}
+
+.adminList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--a-line);
+}
+
+.adminItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  align-items: start;
+  gap: 8px 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--a-line);
+}
+.adminItem[data-inactive] .adminWho {
+  opacity: 0.55;
+}
+
+.adminWho {
+  display: grid;
+  gap: 2px;
+}
+
+.adminMeta {
+  color: var(--a-muted);
+  font-size: 0.85rem;
+}
+
+.meTag {
+  margin-left: 8px;
+  padding: 1px 6px;
+  background: var(--a-accent-soft);
+  color: var(--a-accent-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.adminEdit summary {
+  list-style: none;
+  padding-left: 0;
+}
+.adminEdit summary::-webkit-details-marker {
+  display: none;
+}
+.adminEdit[open] summary {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 860px) {
+  .adminItem {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loginCard .emptyPeak {
+  display: block;
+  margin: 0 auto 12px;
+}

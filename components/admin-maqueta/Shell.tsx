@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ThemeToggle } from "./ThemeToggle";
-import s from "./admin.module.css";
+import { ThemeToggle } from "@/components/admin/ThemeToggle";
+import s from "@/components/admin/admin.module.css";
 
 const nav = [
   { key: "inicio", label: "Inicio", href: "/admin-maqueta/inicio" },

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Contours } from "@/components/admin-maqueta/marks";
-import s from "@/components/admin-maqueta/admin.module.css";
+import { Contours } from "@/components/admin/marks";
+import s from "@/components/admin/admin.module.css";
 
 // Login: invitation only. There is deliberately no "create account" path.
 export default function AdminMockLogin() {
