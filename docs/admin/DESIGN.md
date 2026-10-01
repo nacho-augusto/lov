@@ -283,6 +283,7 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 | 4. Grants | Grants, requirement checklist, documents, expense linking, deadline alerts | A 2026 grant can be prepared and justified in the panel |
 |  | **Status 2026-10-01:** done and tested end to end: grants per year with status and deadlines, required documents as free text (one per line) with per-document files uploaded straight to private Storage (up to 25 MB), expense linking for justification, deadlines on the dashboard. | |
 | 5. League | Monthly grid entry, rankings, ranges, comparison, charts | Monthly update takes < 5 min |
+|  | **Status 2026-10-01:** done and tested end to end: monthly grid entry for all active members, any month range with the previous range as comparison, season profile, summit board with Maromas and sparklines. | |
 | 6. Extras | Club documents, calendar, gear, member portal | — |
 | — | Subdomain switch | When the real domain exists |
 

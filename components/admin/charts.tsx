@@ -1,4 +1,4 @@
-import s from "@/components/admin/admin.module.css";
+import s from "./admin.module.css";
 
 // Cumulative club effort drawn as an elevation profile: the season is a climb.
 // `from`/`to` are month indices of the selected range, shaded in sun orange.
@@ -14,13 +14,13 @@ export function ProfileChart({
   labels: readonly string[];
   from: number;
   to: number;
-  compareFrom: number;
-  compareTo: number;
+  compareFrom?: number | null;
+  compareTo?: number | null;
 }) {
   const W = 960;
   const H = 260;
   const pad = { l: 8, r: 8, t: 24, b: 8 };
-  const max = Math.max(...values) * 1.08;
+  const max = Math.max(1, ...values) * 1.08;
   const step = (W - pad.l - pad.r) / (values.length - 1);
   const x = (i: number) => pad.l + i * step;
   const y = (v: number) => H - pad.b - (v / max) * (H - pad.t - pad.b);
@@ -28,12 +28,15 @@ export function ProfileChart({
   const area = `${line} L${x(values.length - 1)} ${H} L${x(0)} ${H} Z`;
   const band = (a: number, b: number) => ({ x: x(a) - step / 2, w: (b - a + 1) * step });
   const sel = band(from, to);
-  const cmp = band(compareFrom, compareTo);
+  // Bands are clipped to the visible window; a range fully outside it isn't drawn.
+  const clip = (a?: number | null, b?: number | null) =>
+    a == null || b == null || b < 0 || a > values.length - 1 ? null : band(Math.max(0, a), Math.min(values.length - 1, b));
+  const cmp = clip(compareFrom, compareTo);
 
   return (
     <figure className={s.profile}>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Acumulado del club en km-esfuerzo, mes a mes">
-        <rect x={cmp.x} y={0} width={cmp.w} height={H} className={s.profileCompare} />
+        {cmp && <rect x={cmp.x} y={0} width={cmp.w} height={H} className={s.profileCompare} />}
         <rect x={sel.x} y={0} width={sel.w} height={H} className={s.profileBand} />
         {[0.25, 0.5, 0.75].map((f) => (
           <line key={f} x1={0} x2={W} y1={y(max * f)} y2={y(max * f)} className={s.profileGrid} />
@@ -62,7 +65,7 @@ export function ProfileChart({
 export function Spark({ values, from, to }: { values: number[]; from: number; to: number }) {
   const W = 120;
   const H = 30;
-  const max = Math.max(...values);
+  const max = Math.max(1, ...values);
   const step = W / (values.length - 1);
   const pts = values.map((v, i) => [i * step, H - 2 - (v / max) * (H - 6)]);
   const d = pts.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)} ${py.toFixed(1)}`).join(" ");

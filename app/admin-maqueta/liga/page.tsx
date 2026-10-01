@@ -1,5 +1,5 @@
 import { Shell } from "@/components/admin-maqueta/Shell";
-import { ProfileChart, Spark } from "@/components/admin-maqueta/charts";
+import { ProfileChart, Spark } from "@/components/admin/charts";
 import {
   MAROMA_M, effortKm, league, months, monthsLong, num, sumRange,
 } from "@/components/admin-maqueta/data";

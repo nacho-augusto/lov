@@ -1152,7 +1152,7 @@ a.chip {
   background: var(--a-sunken);
 }
 
-.legend {
+.fieldsetLegend {
   margin-bottom: 4px;
   padding: 0;
   font-stretch: 72%;
@@ -1465,4 +1465,8 @@ a.figure:hover .figureLabel {
   .grantCard {
     grid-template-columns: 1fr auto;
   }
+}
+
+.tableScroll {
+  overflow-x: auto;
 }

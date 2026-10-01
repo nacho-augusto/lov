@@ -54,7 +54,7 @@ export function MemberFields({ v = {}, showPrivate }: { v?: MemberValues; showPr
   return (
     <>
       <fieldset className={s.fieldset}>
-        <legend className={s.legend}>Datos</legend>
+        <legend className={s.fieldsetLegend}>Datos</legend>
         <div className={s.fieldRow}>
           <Field label="Nombre" name="first_name" value={v.first_name} required />
           <Field label="Apellidos" name="last_name" value={v.last_name} />
@@ -67,7 +67,7 @@ export function MemberFields({ v = {}, showPrivate }: { v?: MemberValues; showPr
       </fieldset>
 
       <fieldset className={s.fieldset}>
-        <legend className={s.legend}>Contacto de emergencia</legend>
+        <legend className={s.fieldsetLegend}>Contacto de emergencia</legend>
         <div className={s.fieldRow}>
           <Field label="Nombre" name="emergency_name" value={v.emergency_name} />
           <Field label="Teléfono" name="emergency_phone" type="tel" value={v.emergency_phone} />
@@ -75,7 +75,7 @@ export function MemberFields({ v = {}, showPrivate }: { v?: MemberValues; showPr
       </fieldset>
 
       <fieldset className={s.fieldset}>
-        <legend className={s.legend}>Club</legend>
+        <legend className={s.fieldsetLegend}>Club</legend>
         <div className={s.fieldRow}>
           <Field label="Fecha de alta" name="joined_on" type="date" value={v.joined_on} />
           <Field label="Consentimiento de datos firmado el" name="data_consent_on" type="date" value={v.data_consent_on} />
@@ -92,7 +92,7 @@ export function MemberFields({ v = {}, showPrivate }: { v?: MemberValues; showPr
 
       {showPrivate && (
         <fieldset className={s.fieldset} data-private="">
-          <legend className={s.legend}>Datos sensibles · solo propietarios y secretaría</legend>
+          <legend className={s.fieldsetLegend}>Datos sensibles · solo propietarios y secretaría</legend>
           <div className={s.fieldRow}>
             <Field label="DNI / NIE" name="national_id" value={v.national_id} />
           </div>
