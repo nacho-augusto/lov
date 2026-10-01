@@ -1,47 +1,68 @@
-# C.D. La Otra Vertiente — web del club
+# C.D. La Otra Vertiente — club website
 
-Landing informativa del club de trail running y montaña **C.D. La Otra Vertiente**
-(Rincón de la Victoria, Axarquía, Málaga). Una sola app con un **selector** y **tres
-direcciones de diseño** entre las que elegir; en las tres, la montaña del logo se
-**escala al hacer scroll**.
+Informational site for the trail running and mountain club **C.D. La Otra Vertiente**
+(Rincón de la Victoria, Axarquía, Málaga). One Next.js app with a **selector** (`/`) and
+several **design directions** to compare and pick from. User-facing copy is in Spanish.
 
-## Arrancar en local
+## Run locally
 
 ```bash
-npm install --legacy-peer-deps   # ya instalado; --legacy-peer-deps por React 19
+npm install --legacy-peer-deps   # React 19 peer ranges
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000). Rutas:
+Open [http://localhost:3000](http://localhost:3000).
 
-| Ruta | Dirección | Estilo |
-|------|-----------|--------|
-| `/` | Selector | Elige una de las tres versiones |
-| `/cumbre-nocturna` | **Cumbre Nocturna** | Cine inmersivo 3D (R3F): asciendes el macizo de la hora azul al amanecer |
-| `/curvas-de-nivel` | **Curvas de Nivel** | Editorial topográfico (SVG): un corredor escala la cresta y planta bandera |
-| `/vertice` | **Vértice** | WebGL/HUD: terreno wireframe con altímetro y banda de altitud |
+| Route | Direction | Style |
+|-------|-----------|-------|
+| `/` | Selector | Cards for every direction, with screenshots |
+| `/claro` | **Claro** | Light outdoor brand. Built on `nuevos_heros/lov-hero-claro-ultra5k-v4.png`: a club runner on the ridge while three fog layers drift (and flow with scroll) behind and in front of him |
+| `/hora-dorada` | **Hora dorada** | Cinematic documentary. Built on `nuevos_heros/hero.png`: the four runners advance as you scroll (scrubbed video), letterbox, subtitles, season as scenes, end credits |
+| `/frontal` | **Frontal** | Night run from 22:47 to sunrise; the pointer is a headlamp |
+| `/lov-quest` | **LOV Quest** | 8-bit platform game; the hero is playable |
+| `/dorsal` | **Dorsal** | Brutalist race poster in black and orange; halftone photos |
+| `/indice` | **Índice** | Minimal editorial "mountain book" with an altitude rail |
+| `/cumbre-nocturna`, `/curvas-de-nivel`, `/vertice` | First round | Kept as an archive for comparison |
 
 ## Stack
 
-Next.js 16 (App Router, React 19, TS) · Tailwind v4 · GSAP + ScrollTrigger + MotionPath ·
-Lenis (scroll suave) · React Three Fiber + drei + postprocessing · Framer Motion.
+Next.js 16 (App Router, React 19, TS) · Tailwind v4 · GSAP + ScrollTrigger · Lenis ·
+React Three Fiber (first-round `/vertice`, `/cumbre-nocturna`) · Framer Motion (selector).
+Every direction respects `prefers-reduced-motion` and keeps its content in real DOM.
 
-Accesibilidad/rendimiento: respeta `prefers-reduced-motion`, detecta WebGL y cae a un
-fallback sin canvas, todo el contenido vive en DOM real, y el canvas 3D va con DPR
-limitado y carga diferida.
+Note: CSS-module rules are unlayered, so they beat Tailwind v4's layered utilities on the
+same element (e.g. a module `display` wins over `hidden`). Own such properties in the module.
 
-## Estructura
+## Structure
 
-- `app/` — rutas (selector + 3 direcciones) y `layout`/`globals.css` (tokens de marca).
-- `content/` — **única fuente de verdad** (club, picos, carreras, valores, copys, galería).
-- `components/shared/` — nav, footer, contacto, galería, scroll suave, marca/logo.
-- `components/{cumbre-nocturna,curvas-de-nivel,vertice}/` — cada dirección.
-- `lib/mountain.ts` — silueta de montaña compartida (derivada del logo).
-- `public/gallery/` — fotos reales del club · `public/generated/` — imágenes generadas.
+- `app/<route>/` — one folder per direction; each `layout.tsx` scopes its own fonts.
+- `components/<route>/` — the components of each direction (no cross-imports between them).
+- `components/shared/` — logo, smooth scroll and pieces used by the first-round designs.
+- `content/` — **single source of truth**: club identity, peaks, values, races,
+  `season.ts` (2026 season reconstructed from the club's Instagram posts), `photos.ts`
+  (the 21 Instagram photos with alt text and captions) and `sponsors.ts`.
+- `public/club/` — the club's Instagram photos · `public/heroes/` — hero assets
+  (Claro plate, fog strips and ridge mask; Hora dorada clips and posters) ·
+  `public/selector/` — selector thumbnails · `public/{dorsal,frontal,lov-quest}/` — assets
+  of those directions.
+- `nuevos_heros/` — the two source hero images supplied by the club.
 
-## Antes de publicar (pendientes)
+### Hero assets
 
-- [ ] Reemplazar el email de contacto en `content/club.ts` (`info@laotravertiente.es`).
-- [ ] Confirmar permiso para usar las fotos de Instagram (`public/gallery/`).
-- [ ] Verificar las cotas de Navachica y Pico del Cielo en `content/peaks.ts`.
-- [ ] Elegir la dirección favorita (las otras pueden retirarse o quedarse).
+- **Claro:** `plate.jpg` is the supplied hero with the walker replaced by a runner in the
+  club shirt (AI-assisted edit) and the baked-in text removed. `ridge-mask.png` re-draws the
+  near ridge over the back fog, so clouds pass behind the runner and in front of the far peaks.
+- **Hora dorada:** `runners.mp4` (1080p) and `runners-portrait.mp4` (phones) are a 4 s
+  AI-generated clip animated from `hero.png`, encoded with 8-frame GOPs and no B-frames so
+  scroll-scrubbing can seek quickly. Only the first 3.2 s are used: after that the lettering
+  on the shirts starts to degrade.
+
+## Before publishing (pending)
+
+- [ ] Replace the placeholder contact email in `content/club.ts` (`info@laotravertiente.es`).
+      Every new direction labels it "por confirmar" and leads with Instagram.
+- [ ] Confirm permission to use the Instagram photos (`public/club/`, `public/gallery/`).
+- [ ] Verify the elevations of Navachica and Pico del Cielo in `content/peaks.ts`.
+- [ ] `stats` in `content/club.ts` ("+100 cumbres") is unverified; only the first round uses it.
+- [ ] The 2026 season events are past (Apr–Aug); add the next dates when the club has them.
+- [ ] Pick the favourite direction(s); the rest can be removed.

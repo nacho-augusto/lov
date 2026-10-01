@@ -6,7 +6,7 @@ import { club } from "@/content/club";
 export const metadata: Metadata = {
   title: "Elige tu experiencia",
   description:
-    "Tres versiones de la web de C.D. La Otra Vertiente. Elige la que más te guste.",
+    "Seis versiones de la web de C.D. La Otra Vertiente, muy distintas entre sí. Elige la que más te guste.",
 };
 
 export default function SelectorPage() {
@@ -30,9 +30,10 @@ export default function SelectorPage() {
         <h1 className="font-display mt-4 text-5xl uppercase sm:text-7xl">
           Elige tu vertiente
         </h1>
-        <p className="mt-5 max-w-xl text-balance text-snow/65">
-          Tres maquetas de la web del club, cada una con su propia personalidad y
-          su montaña que se escala al hacer scroll. Ábrelas y elige tu favorita.
+        <p className="mt-5 max-w-2xl text-balance text-snow/65">
+          Seis maquetas de la web del club, cada una con su propia personalidad: de la
+          más luminosa a un videojuego. Ábrelas, compáralas y quédate con lo que más te
+          guste de cada una.
         </p>
       </header>
 
