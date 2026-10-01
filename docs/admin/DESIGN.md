@@ -276,6 +276,7 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 | 0. Foundation | Supabase project, schema + RLS, invite-only auth (Google + magic link), roles, admin shell, audit log | An invited admin can log in; a non-invited Google account cannot; RLS tests pass |
 |  | **Status 2026-10-01:** schema `club` applied to bluchia-dev and RLS-tested (`db/tests/`); invite-only login (email link, Google pending provider setup), protected `/admin` shell, admins & invitations page. Needs: `club` exposed in Data API, redirect URL, `SUPABASE_SECRET_KEY` in `.env.local`. | |
 | 1. Members | Member CRUD, join/leave, onboarding checklist, licences | Board can migrate the current member list |
+|  | **Status 2026-10-01:** done and tested end to end with a throwaway session: list/search, alta with checklist, record (sensitive data split, owner/secretary only), licences, baja/reactivation, open season. `club` exposed in the Data API in-database (see `db/README.md`). | |
 | 2. Money | Fee types, assignments, charge generation, payments → ledger, ledger, budgets, CSV | A full fee cycle runs end to end and balances match |
 | 3. Emails | Templates, manual sends, log, automatic reminder rules (cron) | Overdue members receive one reminder; log shows it |
 | 4. Grants | Grants, requirement checklist, documents, expense linking, deadline alerts | A 2026 grant can be prepared and justified in the panel |

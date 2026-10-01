@@ -10,7 +10,7 @@ function navFor(admin: AdminSession): NavItem[] {
   const can = (p: string) => admin.permissions.has(p);
   const items: (NavItem & { show: boolean })[] = [
     { label: "Inicio", href: "/admin", show: true },
-    { label: "Miembros", href: null, show: can("members.read") },
+    { label: "Miembros", href: "/admin/miembros", show: can("members.read") },
     { label: "Cuentas", href: null, show: can("accounts.read") },
     { label: "Cuotas", href: null, show: can("fees.read") },
     { label: "Subvenciones", href: null, show: can("grants.read") },

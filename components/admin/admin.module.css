@@ -1106,3 +1106,147 @@ button.signOut {
   display: block;
   margin: 0 auto 12px;
 }
+
+/* ---------- Members ---------- */
+
+a.chip {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.search {
+  width: min(320px, 100%);
+}
+.search .input {
+  width: 100%;
+}
+
+.rowLink {
+  color: inherit;
+  text-decoration: none;
+}
+.rowLink:hover {
+  color: var(--a-accent-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.status[data-tone="done"] {
+  color: var(--a-up);
+}
+.status[data-tone="done"]::before {
+  background: var(--a-up);
+}
+
+.fieldset {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--a-line);
+}
+.fieldset[data-private] {
+  padding: 14px;
+  border: 1px dashed var(--a-line-strong);
+  background: var(--a-sunken);
+}
+
+.legend {
+  margin-bottom: 4px;
+  padding: 0;
+  font-stretch: 72%;
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+}
+
+.textarea {
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 1px solid var(--a-line-strong);
+  background: var(--a-panel);
+  color: var(--a-text);
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  resize: vertical;
+}
+
+.checkLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.checkLine input {
+  accent-color: var(--orange);
+}
+
+.formActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.inlineForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+.facts dt {
+  color: var(--a-muted);
+  font-size: 0.85rem;
+}
+.facts dd {
+  margin: 0;
+}
+
+.checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.checklist li {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--a-line);
+}
+
+/* diamond like the trail waymarks used for statuses */
+.checkMark {
+  width: 10px;
+  height: 10px;
+  margin-left: 3px;
+  transform: rotate(45deg);
+  box-shadow: inset 0 0 0 2px var(--a-line-strong);
+}
+.checklist li[data-status="pending"] .checkMark {
+  box-shadow: none;
+  background: var(--a-accent);
+}
+.checklist li[data-status="done"] .checkMark {
+  box-shadow: none;
+  background: var(--a-up);
+}
+.checklist li[data-status="not_applicable"] {
+  color: var(--a-muted);
+}
+
+.statusForm {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
