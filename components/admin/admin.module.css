@@ -1216,7 +1216,7 @@ a.chip {
   padding: 0;
   list-style: none;
 }
-.checklist li {
+.checklist > li {
   display: grid;
   grid-template-columns: 18px 1fr auto;
   align-items: center;
@@ -1233,15 +1233,15 @@ a.chip {
   transform: rotate(45deg);
   box-shadow: inset 0 0 0 2px var(--a-line-strong);
 }
-.checklist li[data-status="pending"] .checkMark {
+.checklist > li[data-status="pending"] > .checkMark {
   box-shadow: none;
   background: var(--a-accent);
 }
-.checklist li[data-status="done"] .checkMark {
+.checklist > li[data-status="done"] > .checkMark {
   box-shadow: none;
   background: var(--a-up);
 }
-.checklist li[data-status="not_applicable"] {
+.checklist > li[data-status="not_applicable"] {
   color: var(--a-muted);
 }
 
@@ -1372,4 +1372,97 @@ a.figure {
 }
 a.figure:hover .figureLabel {
   color: var(--a-accent-text);
+}
+
+/* ---------- Grants ---------- */
+
+.grantList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--a-line);
+}
+.grantCard {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(120px, auto) minmax(140px, 1fr) 120px minmax(150px, 1fr);
+  align-items: center;
+  gap: 8px 18px;
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--a-line);
+  color: inherit;
+  text-decoration: none;
+}
+.grantCard:hover {
+  background: var(--a-sunken);
+}
+.grantMain {
+  display: grid;
+}
+.grantCard [data-soon] {
+  color: var(--a-accent-text);
+  font-weight: 600;
+}
+
+.progress {
+  position: relative;
+  display: block;
+  height: 6px;
+  background: var(--a-line);
+}
+.progress span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--a-up);
+}
+.progress em {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  color: var(--a-muted);
+  font-size: 0.75rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.reqItem {
+  align-items: start !important;
+}
+.reqItem .checkMark {
+  margin-top: 6px;
+}
+
+.docList {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+}
+.docList li::before {
+  content: "↳ ";
+  color: var(--a-muted);
+}
+
+.upload {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.upload label {
+  cursor: pointer;
+}
+.uploadError {
+  color: var(--a-accent-text);
+  font-size: 0.82rem;
+}
+
+.popoverBody form {
+  display: grid;
+  justify-items: start;
+}
+
+@media (max-width: 860px) {
+  .grantCard {
+    grid-template-columns: 1fr auto;
+  }
 }

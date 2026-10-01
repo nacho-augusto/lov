@@ -281,6 +281,7 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 |  | **Status 2026-10-01:** done and tested end to end: fee types (any periodicity), per-member assignments with special prices, period charge generation, partial payments booked to the ledger automatically, waiving, ledger with private receipts, budget vs actual, CSV export. | |
 | 3. Emails | Templates, manual sends, log, automatic reminder rules (cron) | Overdue members receive one reminder; log shows it |
 | 4. Grants | Grants, requirement checklist, documents, expense linking, deadline alerts | A 2026 grant can be prepared and justified in the panel |
+|  | **Status 2026-10-01:** done and tested end to end: grants per year with status and deadlines, required documents as free text (one per line) with per-document files uploaded straight to private Storage (up to 25 MB), expense linking for justification, deadlines on the dashboard. | |
 | 5. League | Monthly grid entry, rankings, ranges, comparison, charts | Monthly update takes < 5 min |
 | 6. Extras | Club documents, calendar, gear, member portal | — |
 | — | Subdomain switch | When the real domain exists |

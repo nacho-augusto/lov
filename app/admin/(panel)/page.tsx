@@ -3,7 +3,8 @@ import { Notice } from "@/components/admin/Notice";
 import { PageHead } from "@/components/admin/PageHead";
 import { PeakSilhouette } from "@/components/admin/marks";
 import s from "@/components/admin/admin.module.css";
-import { currentSeason, formatDate } from "@/lib/admin/format";
+import { currentSeason, formatDate, todayISO } from "@/lib/admin/format";
+import { daysUntil, nextDeadline, type GrantStatus } from "@/lib/admin/grants";
 import { eur } from "@/lib/admin/money";
 import { requireAdmin } from "@/lib/admin/session";
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +37,7 @@ export default async function AdminHome({
   const supabase = await createClient();
   const none = Promise.resolve({ data: null });
 
-  const [{ data: money }, { data: charges }, { data: activeMembers }, { data: licences }, { data: lastMoves }] = await Promise.all([
+  const [{ data: money }, { data: charges }, { data: activeMembers }, { data: licences }, { data: lastMoves }, { data: grants }] = await Promise.all([
     can("accounts.read") ? supabase.from("transactions").select("kind, amount_cents") : none,
     can("fees.read")
       ? supabase
@@ -50,7 +51,18 @@ export default async function AdminHome({
     can("accounts.read")
       ? supabase.from("transactions").select("id, kind, occurred_on, amount_cents, description").order("occurred_on", { ascending: false }).order("created_at", { ascending: false }).limit(5)
       : none,
+    can("grants.read")
+      ? supabase.from("grants").select("id, name, status, application_deadline, justification_deadline").in("status", ["preparing", "awarded"])
+      : none,
   ]);
+  const todayIso = todayISO();
+  const deadlines = (grants ?? [])
+    .map((g) => {
+      const next = nextDeadline(g as { status: GrantStatus; application_deadline: string | null; justification_deadline: string | null });
+      return next ? { id: g.id, name: g.name, ...next, days: daysUntil(next.date, todayIso) ?? 0 } : null;
+    })
+    .filter((d): d is NonNullable<typeof d> => d !== null)
+    .sort((a, b) => a.days - b.days);
 
   const balance = (money ?? []).reduce((a, t) => a + (t.kind === "income" ? 1 : -1) * Number(t.amount_cents), 0);
   const open = (charges ?? []) as unknown as OpenCharge[];
@@ -130,6 +142,28 @@ export default async function AdminHome({
             <p className={s.emptyTitle}>{name ? `Hola, ${name}` : "Hola"}</p>
             <p className={s.emptyText}>Usa el menú para ir a tus secciones.</p>
           </div>
+        )}
+
+        {can("grants.read") && deadlines.length > 0 && (
+          <section className={s.block} aria-labelledby="plazos">
+            <header className={s.blockHead}>
+              <h2 id="plazos" className={s.blockTitle}>Plazos de subvenciones</h2>
+              <Link href="/admin/subvenciones" className={s.linkButton}>Subvenciones</Link>
+            </header>
+            <ol className={s.deadlines}>
+              {deadlines.slice(0, 5).map((d) => (
+                <li key={d.id}>
+                  <span className={s.deadlineDate}>{formatDate(d.date, { day: "numeric", month: "short" })}</span>
+                  <Link href={`/admin/subvenciones/${d.id}`} className={`${s.rowLink} ${s.deadlineWhat}`}>
+                    {d.kind} · {d.name}
+                  </Link>
+                  <span className={s.deadlineDays} data-soon={d.days <= 21 ? "" : undefined}>
+                    {d.days >= 0 ? `${d.days} d` : "vencido"}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
         )}
 
         {can("accounts.read") && (

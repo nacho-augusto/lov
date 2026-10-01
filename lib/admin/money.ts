@@ -11,11 +11,13 @@ export function eur(cents: number | null | undefined) {
   });
 }
 
-// "12", "12,5", "12.50", "1.234,56" → cents. Null when not a positive amount.
+// "12", "12,5", "12.50", "1.500", "1.234,56" → cents. Null when not a positive amount.
 export function parseEuros(input: FormDataEntryValue | null): number | null {
   let s = String(input ?? "").trim().replace(/\s|€/g, "");
   if (!s) return null;
   if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  // Without a comma, "1.500" or "12.000" is a Spanish thousands separator.
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
   if (!/^\d+(\.\d{1,2})?$/.test(s)) return null;
   const cents = Math.round(Number(s) * 100);
   return cents > 0 ? cents : null;
