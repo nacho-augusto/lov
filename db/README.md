@@ -37,6 +37,9 @@ insert into club.invitations (email, roles) values ('someone@example.com', '{own
 4. **Authentication → Email → "Confirm email"** must stay on. Invitations can only be
    claimed from an email-link/OTP or Google session on an account without a password
    (`0007_claim_hardening.sql`), but confirmed emails are still part of the check.
+   The member portal (`0010`) relies on the same proof. Keep **anonymous sign-ins** and
+   **phone OTP** off: an anonymous user can set an email that auto-confirm marks as verified,
+   and phone OTP also reports `amr = otp`.
 5. **`ADMIN_ORIGIN`** env var: the panel's public origin; sign-in links are built from it.
    **`PORTAL_ORIGIN`** does the same for the member portal (falls back to `ADMIN_ORIGIN`).
 

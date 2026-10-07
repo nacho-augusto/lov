@@ -287,7 +287,7 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 | 5. League | Monthly grid entry, rankings, ranges, comparison, charts | Monthly update takes < 5 min |
 |  | **Status 2026-10-01:** done and tested end to end: monthly grid entry for all active members, any month range with the previous range as comparison, season profile, summit board with Maromas and sparklines. | |
 | 6. Extras | Club documents, calendar, gear, member portal | — |
-|  | **Status 2026-10-07:** built and RLS-tested locally (`db/tests/0008`–`0010`), not yet applied to bluchia-dev nor tried in the browser. Club documents with expiry and private files (dashboard warns 60 days ahead); calendar with capacity-checked sign-ups; gear with one holder at a time and loan history; member portal at `/socio` (email link, no password: own fees, league months, activity sign-ups). Also: settings page for categories and onboarding items, GDPR export (JSON) and anonymisation of former members, "no automatic reminders" flag (used once the reminder cron exists). | |
+|  | **Status 2026-10-07:** built and RLS-tested locally (`db/tests/0008`–`0011`), not yet applied to bluchia-dev nor tried in the browser. Club documents with expiry and private files (dashboard warns 60 days ahead); calendar with capacity-checked sign-ups; gear with one holder at a time and loan history; member portal at `/socio` (email link, no password: own fees, league months, activity sign-ups). Also: settings page for categories and onboarding items, GDPR export (JSON) and anonymisation of former members, "no automatic reminders" flag (used once the reminder cron exists). | |
 | — | Subdomain switch | When the real domain exists |
 
 Each phase: tests for RLS and money logic, a functional pass in the browser, review before
@@ -307,6 +307,7 @@ merge.
 - Sign-ups from the portal go through `club.portal_signup`, which re-checks the link, the
   deadline and (via the sign-up trigger) the places left. The audit log shows them as made
   "desde su zona".
+- Panel and portal share one session cookie: "Salir" in either signs out of both.
 
 ### Privacy tools (implemented)
 
@@ -315,7 +316,9 @@ merge.
 - **Anonymise:** `club.anonymise_member` for former members with nothing owed: clears
   personal fields and private data, renames them "Antiguo miembro XXXX" in the ledger and
   sending log, scrubs personal values from the audit log, keeps every amount. Irreversible;
-  an anonymised member can't be reactivated.
+  an anonymised member is frozen (`0011`): no edits, licences, sign-ups or loans. The auth
+  user a member may have from the portal is not deleted (shared auth in dev): remove it by
+  hand in Supabase if asked.
 
 ## 9. Assumptions to confirm
 

@@ -63,8 +63,15 @@ export default async function CalendarPage({
   const supabase = await createClient();
   const fields = "id, title, kind, starts_on, start_time, location, capacity, cancelled, event_signups(count)";
   const [{ data: upcoming }, { data: past }] = await Promise.all([
-    supabase.from("events").select(fields).gte("starts_on", todayIso).order("starts_on").order("start_time"),
-    supabase.from("events").select(fields).lt("starts_on", todayIso).order("starts_on", { ascending: false }).limit(20),
+    // Multi-day activities stay "upcoming" until their last day.
+    supabase.from("events").select(fields).or(`starts_on.gte.${todayIso},ends_on.gte.${todayIso}`).order("starts_on").order("start_time"),
+    supabase
+      .from("events")
+      .select(fields)
+      .lt("starts_on", todayIso)
+      .or(`ends_on.is.null,ends_on.lt.${todayIso}`)
+      .order("starts_on", { ascending: false })
+      .limit(20),
   ]);
   const next = (upcoming ?? []) as unknown as EventRow[];
   const done = (past ?? []) as unknown as EventRow[];

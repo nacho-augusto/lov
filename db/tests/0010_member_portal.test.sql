@@ -7,7 +7,7 @@ insert into auth.users (id, email, email_confirmed_at, aud, role, encrypted_pass
   ('00000000-0000-4000-8000-0000000000b2', 'otra@club.test', now(), 'authenticated', 'authenticated', null),
   ('00000000-0000-4000-8000-0000000000c3', 'conclave@club.test', now(), 'authenticated', 'authenticated', '$2a$10$hash');
 insert into club.members (id, first_name, email) values
-  ('00000000-0000-4000-8000-00000000f001', 'Madre', 'Familia@club.test'),
+  ('00000000-0000-4000-8000-00000000f001', 'Madre', 'familia@club.test'),
   ('00000000-0000-4000-8000-00000000f002', 'Hijo', 'familia@club.test'),
   ('00000000-0000-4000-8000-00000000f003', 'Otra', 'otra@club.test'),
   ('00000000-0000-4000-8000-00000000f004', 'Clave', 'conclave@club.test');

@@ -14,7 +14,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const supabase = await createClient();
   const canFees = admin.permissions.has("fees.read");
   const empty = Promise.resolve({ data: [] });
-  const [member, priv, requirements, licences, fees, charges, league, emails] = await Promise.all([
+  const [member, priv, requirements, licences, fees, charges, league, emails, signups, loans] = await Promise.all([
     supabase
       .from("members")
       .select("first_name, last_name, email, phone, birth_date, emergency_name, emergency_phone, joined_on, left_on, data_consent_on, image_consent, no_auto_reminders, notes, created_at")
@@ -31,10 +31,22 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       ? supabase.from("league_entries").select("month, distance_m, elevation_gain_m").eq("member_id", id).order("month")
       : empty,
     admin.permissions.has("comms.read")
-      ? supabase.from("email_messages").select("subject, sent_at").contains("recipients", [{ member_id: id }]).order("sent_at")
+      ? // jsonb containment: postgrest-js serialises arrays as Postgres arrays, so pass JSON text.
+        supabase.from("email_messages").select("subject, sent_at").contains("recipients", JSON.stringify([{ member_id: id }])).order("sent_at")
+      : empty,
+    admin.permissions.has("events.read")
+      ? supabase.from("event_signups").select("notes, created_at, events(title, starts_on)").eq("member_id", id)
+      : empty,
+    admin.permissions.has("gear.read")
+      ? supabase.from("gear_loans").select("out_on, returned_on, notes, gear_items(name, code)").eq("member_id", id)
       : empty,
   ]);
-  if (member.error || !member.data) return new NextResponse("No encontrado", { status: 404 });
+  if (member.error) return new NextResponse("Error", { status: 500 });
+  if (!member.data) return new NextResponse("No encontrado", { status: 404 });
+  // A partial export would look complete: fail instead.
+  if ([priv, requirements, licences, fees, charges, league, emails, signups, loans].some((r) => "error" in r && r.error)) {
+    return new NextResponse("Error", { status: 500 });
+  }
 
   const body = {
     generado: new Date().toISOString(),
@@ -47,6 +59,8 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     cargos_y_pagos: charges.data ?? [],
     liga: league.data ?? [],
     correos_recibidos: emails.data ?? [],
+    actividades: signups.data ?? [],
+    material_prestado: loans.data ?? [],
   };
   const slug = `${member.data.first_name}-${member.data.last_name}`
     .normalize("NFD")

@@ -68,10 +68,10 @@ export default async function AdminHome({
       ? supabase.from("grants").select("id, name, status, application_deadline, justification_deadline").in("status", ["preparing", "awarded"])
       : none,
     can("events.read")
-      ? supabase.from("events").select("id, title, starts_on, start_time").eq("cancelled", false).gte("starts_on", todayIso).lte("starts_on", inDays(21)).order("starts_on").limit(5)
+      ? supabase.from("events").select("id, title, starts_on, start_time").eq("cancelled", false).or(`starts_on.gte.${todayIso},ends_on.gte.${todayIso}`).lte("starts_on", inDays(21)).order("starts_on").limit(5)
       : none,
     can("documents.read")
-      ? supabase.from("club_documents").select("id, name, expires_on").lte("expires_on", inDays(EXPIRY_WARNING_DAYS)).order("expires_on").limit(5)
+      ? supabase.from("club_documents").select("id, name, expires_on").gte("expires_on", inDays(-30)).lte("expires_on", inDays(EXPIRY_WARNING_DAYS)).order("expires_on").limit(5)
       : none,
   ]);
   const deadlines = (grants ?? [])
