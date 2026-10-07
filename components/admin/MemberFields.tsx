@@ -11,6 +11,7 @@ export interface MemberValues {
   joined_on?: string;
   data_consent_on?: string | null;
   image_consent?: boolean;
+  no_auto_reminders?: boolean;
   notes?: string | null;
   national_id?: string | null;
   health_notes?: string | null;
@@ -83,6 +84,10 @@ export function MemberFields({ v = {}, showPrivate }: { v?: MemberValues; showPr
         <label className={s.checkLine}>
           <input type="checkbox" name="image_consent" defaultChecked={v.image_consent} />
           <span>Autoriza el uso de su imagen en fotos y redes del club</span>
+        </label>
+        <label className={s.checkLine}>
+          <input type="checkbox" name="no_auto_reminders" defaultChecked={v.no_auto_reminders} />
+          <span>No quiere recordatorios automáticos por correo</span>
         </label>
         <label className={s.field}>
           <span>Notas</span>

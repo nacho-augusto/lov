@@ -12,7 +12,7 @@ import { eur, periodicityLabels, type Periodicity } from "@/lib/admin/money";
 import { requireAdmin } from "@/lib/admin/session";
 import { createClient } from "@/lib/supabase/server";
 import { addMemberFee, endMemberFee } from "../../cuotas/actions";
-import { saveLicence, setMemberLeft, setRequirementStatus, updateMember } from "../actions";
+import { anonymiseMember, saveLicence, setMemberLeft, setRequirementStatus, updateMember } from "../actions";
 
 export const metadata: Metadata = { title: "Ficha de miembro" };
 
@@ -27,6 +27,10 @@ const messages: Record<string, string> = {
   datos: "Revisa las fechas y el correo.",
   "fecha-baja": "La fecha de baja no puede ser anterior al alta.",
   temporada: "Esa temporada no es válida.",
+  anonimizado: "Datos personales borrados. Sus cuentas y su liga se conservan sin nombre.",
+  confirmar: "Marca la casilla para confirmar que quieres anonimizarle.",
+  "anonimizar-deuda": "Tiene cargos pendientes: cóbralos o condónalos antes de anonimizar.",
+  "anonimizar-activo": "Solo se puede anonimizar a quien está de baja.",
   guardar: "No se ha podido guardar. Inténtalo de nuevo.",
 };
 
@@ -73,7 +77,7 @@ export default async function MemberPage({
   const { ok, error } = await searchParams;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
 
-  const canWrite = me.permissions.has("members.write");
+  let canWrite = me.permissions.has("members.write");
   const canSeePrivate = me.permissions.has("members.sensitive");
   const canSeeFees = me.permissions.has("fees.read");
   const canWriteFees = me.permissions.has("fees.write");
@@ -100,6 +104,8 @@ export default async function MemberPage({
       ])
     : [{ data: [] }, { data: [] }, { data: [] }];
   if (!member) notFound();
+  // Anonymised records are frozen: nothing personal left to edit.
+  if (member.anonymised_at) canWrite = false;
 
   const requirements = ((reqs ?? []) as unknown as Requirement[]).sort(
     (a, b) => (b.season ?? 9999) - (a.season ?? 9999) || (a.requirement_templates?.sort ?? 0) - (b.requirement_templates?.sort ?? 0),
@@ -316,6 +322,42 @@ export default async function MemberPage({
               </form>
             )}
           </section>
+
+          {canSeePrivate && (
+            <section className={s.block} aria-labelledby="privacidad">
+              <header className={s.blockHead}>
+                <h2 id="privacidad" className={s.blockTitle}>Privacidad</h2>
+              </header>
+              {member.anonymised_at ? (
+                <p className={s.blockMeta}>Anonimizado el {formatDate(member.anonymised_at)}. Ya no queda ningún dato personal.</p>
+              ) : (
+                <>
+                  <p className={s.blockMeta}>
+                    Si pide sus datos, descárgalos y envíaselos.{" "}
+                    <a href={`/admin/miembros/${member.id}/datos`} className={s.linkButton} download>
+                      Descargar sus datos
+                    </a>
+                  </p>
+                  {!member.active && (
+                    <form action={anonymiseMember} className={s.formStack} style={{ marginTop: 14 }}>
+                      <input type="hidden" name="id" value={member.id} />
+                      <p className={s.blockMeta}>
+                        Si pide que borremos sus datos: se quitan nombre, contacto, DNI y notas. Pagos, cuentas y liga se quedan
+                        con un nombre genérico, porque el club tiene que conservar su contabilidad.
+                      </p>
+                      <label className={s.checkLine}>
+                        <input type="checkbox" name="confirm" required />
+                        <span>Entiendo que no se puede deshacer</span>
+                      </label>
+                      <div>
+                        <button type="submit" className={s.secondaryButton}>Anonimizar</button>
+                      </div>
+                    </form>
+                  )}
+                </>
+              )}
+            </section>
+          )}
 
           {canWrite && (
             <section className={s.block} aria-labelledby="estado">

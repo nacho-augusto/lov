@@ -35,7 +35,7 @@ do $$ begin
   if not club.claim_invitation() then raise exception 'owner could not claim'; end if;
   if not club.claim_invitation() then raise exception 'second claim should still be true'; end if;
   if not club.has_permission('admins.manage') then raise exception 'owner lacks admins.manage'; end if;
-  if (select count(*) from club.my_permissions()) <> 16 then raise exception 'owner permission count'; end if;
+  if (select count(*) from club.my_permissions()) <> (select count(distinct permission) from club.role_permissions) then raise exception 'owner lacks a permission'; end if;
 end $$;
 
 -- 3. Owner invites a treasurer; the treasurer claims and is limited.

@@ -26,6 +26,7 @@ function memberFields(formData: FormData) {
     joined_on: date(formData, "joined_on") ?? todayISO(),
     data_consent_on: date(formData, "data_consent_on"),
     image_consent: formData.get("image_consent") === "on",
+    no_auto_reminders: formData.get("no_auto_reminders") === "on",
     notes: text(formData, "notes"),
   };
 }
@@ -149,4 +150,18 @@ export async function openSeason(formData: FormData) {
   const { data, error } = await supabase.rpc("open_season", { p_season: season });
   if (error) done(LIST, "error", "guardar");
   done(LIST, "ok", `temporada-${season}-${data ?? 0}`);
+}
+
+// GDPR erasure for a former member: personal data goes, accounting stays.
+export async function anonymiseMember(formData: FormData) {
+  await requireAdmin("members.sensitive");
+  const id = String(formData.get("id"));
+  if (!/^[0-9a-f-]{36}$/i.test(id)) done(LIST, "error", "guardar");
+  const path = `/admin/miembros/${id}`;
+  if (formData.get("confirm") !== "on") done(path, "error", "confirmar");
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("anonymise_member", { p_member: id });
+  if (error) done(path, "error", error.code === "23514" ? (error.message.includes("pendientes") ? "anonimizar-deuda" : "anonimizar-activo") : "guardar");
+  done(path, "ok", "anonimizado");
 }
