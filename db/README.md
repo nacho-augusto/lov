@@ -30,10 +30,20 @@ insert into club.invitations (email, roles) values ('someone@example.com', '{own
    ```
    In a dedicated project, use Settings → Data API → Exposed schemas instead.
 2. **Authentication → URL configuration → Redirect URLs:** add
-   `http://localhost:3000/admin/auth/callback` (and the production URL later).
+   `http://localhost:3000/admin/auth/callback` and `http://localhost:3000/socio/auth/callback`
+   (member portal), and the production URLs later.
 3. **Authentication → Providers → Google** (optional): enable with a Google OAuth client.
    In production also disable "Allow new users to sign up".
 4. **Authentication → Email → "Confirm email"** must stay on. Invitations can only be
    claimed from an email-link/OTP or Google session on an account without a password
    (`0007_claim_hardening.sql`), but confirmed emails are still part of the check.
 5. **`ADMIN_ORIGIN`** env var: the panel's public origin; sign-in links are built from it.
+   **`PORTAL_ORIGIN`** does the same for the member portal (falls back to `ADMIN_ORIGIN`).
+
+## Tests
+
+`tests/` has one file per migration; each runs in a transaction and rolls back, so it is
+safe against dev. They expect every migration to be applied. To run them on a throwaway
+local Postgres, stub the bits of Supabase they touch (`auth.users`, `auth.uid()`,
+`auth.jwt()`, `storage.buckets`, `storage.objects`, roles `anon`, `authenticated`,
+`service_role`), apply `migrations/` in order and run each test file with psql.

@@ -24,6 +24,9 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/indice` | **Índice** | Minimal editorial "mountain book" with an altitude rail |
 | `/cumbre-nocturna`, `/curvas-de-nivel`, `/vertice` | First round | Kept as an archive for comparison |
 
+Club back-office: `/admin` (board panel, invitation only) and `/socio` (members' zone, email
+link). Design and status in `docs/admin/DESIGN.md`; database in `db/README.md`.
+
 ## Stack
 
 Next.js 16 (App Router, React 19, TS) · Tailwind v4 · GSAP + ScrollTrigger · Lenis ·

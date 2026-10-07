@@ -1,6 +1,7 @@
 # Admin panel — design
 
-Status: **draft for review** (2026-10-01). Nothing here is implemented yet.
+Status: **implemented** through phase 6 (2026-10-07); see the status rows in §8. Pending: email
+provider + automatic reminders and the subdomain switch, both waiting for the club domain.
 
 Private back-office for the board of C.D. La Otra Vertiente. Invitation-only, no
 self-registration. UI copy in Spanish; code, schema and docs in English.
@@ -178,7 +179,7 @@ season, grant deadlines in the next 30 days, current balance, last league update
 - **Activity calendar**: outings and races with sign-ups.
 - **Club gear**: items, who has them, since when.
 - **Member portal** (magic link, no registration): own payments, own league history,
-  later self-reporting of league data.
+  activity sign-ups; later self-reporting of league data.
 
 ---
 
@@ -245,7 +246,7 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 
 - Desktop-first but usable on phone (treasurer recording a Bizum on the go).
 - Left nav: Inicio · Miembros · Cuentas · Cuotas · Subvenciones · Liga · Comunicaciones ·
-  Ajustes (admins, roles, plantillas, categorías).
+  Calendario · Documentos · Material · Ajustes (categorías y trámites, administradores, registro).
 - No generic admin template and no flashy effects (no glass, glow, 3D, heavy animation).
   Everything derives from the club identity:
   - **Palette from the logo**: rock black (`--charcoal #14171c` / `--ink`), snow white
@@ -286,12 +287,35 @@ Charge status, balances and league aggregates are views/queries, not stored colu
 | 5. League | Monthly grid entry, rankings, ranges, comparison, charts | Monthly update takes < 5 min |
 |  | **Status 2026-10-01:** done and tested end to end: monthly grid entry for all active members, any month range with the previous range as comparison, season profile, summit board with Maromas and sparklines. | |
 | 6. Extras | Club documents, calendar, gear, member portal | — |
+|  | **Status 2026-10-07:** built and RLS-tested locally (`db/tests/0008`–`0010`), not yet applied to bluchia-dev nor tried in the browser. Club documents with expiry and private files (dashboard warns 60 days ahead); calendar with capacity-checked sign-ups; gear with one holder at a time and loan history; member portal at `/socio` (email link, no password: own fees, league months, activity sign-ups). Also: settings page for categories and onboarding items, GDPR export (JSON) and anonymisation of former members, "no automatic reminders" flag (used once the reminder cron exists). | |
 | — | Subdomain switch | When the real domain exists |
 
 Each phase: tests for RLS and money logic, a functional pass in the browser, review before
 merge.
 
 ---
+
+### Member portal (implemented)
+
+- Route `/socio`, same app and Supabase auth as the panel. Sign-in by email link only; a new
+  auth user is created only for an address that belongs to an active member, and the form
+  answers the same either way.
+- Members get **no table access**. Security-definer RPCs (`club.portal_*`) return only rows
+  of the members whose email matches the caller's confirmed address, proven by an email
+  link/OTP or OAuth session on an account without a password (same rule as invitations,
+  `0007`). Members sharing one email (a family) see each other.
+- Sign-ups from the portal go through `club.portal_signup`, which re-checks the link, the
+  deadline and (via the sign-up trigger) the places left. The audit log shows them as made
+  "desde su zona".
+
+### Privacy tools (implemented)
+
+- **Export:** `/admin/miembros/<id>/datos` returns a JSON with everything held about a member
+  (needs `members.sensitive`).
+- **Anonymise:** `club.anonymise_member` for former members with nothing owed: clears
+  personal fields and private data, renames them "Antiguo miembro XXXX" in the ledger and
+  sending log, scrubs personal values from the audit log, keeps every amount. Irreversible;
+  an anonymised member can't be reactivated.
 
 ## 9. Assumptions to confirm
 
@@ -301,3 +325,5 @@ merge.
 - Licences are charged to members as a fee type; whether the club fronts the payment does
   not change the model.
 - Some admins may not use Google → magic-link email login as fallback.
+- Portal: a family sharing one email sees all its members; activity sign-ups have no waiting
+  list; former members can't sign in to the portal.
