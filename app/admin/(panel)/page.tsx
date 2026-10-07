@@ -4,6 +4,7 @@ import { PageHead } from "@/components/admin/PageHead";
 import { PeakSilhouette } from "@/components/admin/marks";
 import s from "@/components/admin/admin.module.css";
 import { currentSeason, formatDate, todayISO } from "@/lib/admin/format";
+import { EXPIRY_WARNING_DAYS, expiryStatus } from "@/lib/admin/extras";
 import { daysUntil, nextDeadline, type GrantStatus } from "@/lib/admin/grants";
 import { eur } from "@/lib/admin/money";
 import { requireAdmin } from "@/lib/admin/session";
@@ -37,7 +38,19 @@ export default async function AdminHome({
   const supabase = await createClient();
   const none = Promise.resolve({ data: null });
 
-  const [{ data: money }, { data: charges }, { data: activeMembers }, { data: licences }, { data: lastMoves }, { data: grants }] = await Promise.all([
+  const todayIso = todayISO();
+  const inDays = (n: number) => new Date(Date.parse(`${todayIso}T12:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+
+  const [
+    { data: money },
+    { data: charges },
+    { data: activeMembers },
+    { data: licences },
+    { data: lastMoves },
+    { data: grants },
+    { data: events },
+    { data: docs },
+  ] = await Promise.all([
     can("accounts.read") ? supabase.from("transactions").select("kind, amount_cents") : none,
     can("fees.read")
       ? supabase
@@ -54,8 +67,13 @@ export default async function AdminHome({
     can("grants.read")
       ? supabase.from("grants").select("id, name, status, application_deadline, justification_deadline").in("status", ["preparing", "awarded"])
       : none,
+    can("events.read")
+      ? supabase.from("events").select("id, title, starts_on, start_time").eq("cancelled", false).gte("starts_on", todayIso).lte("starts_on", inDays(21)).order("starts_on").limit(5)
+      : none,
+    can("documents.read")
+      ? supabase.from("club_documents").select("id, name, expires_on").lte("expires_on", inDays(EXPIRY_WARNING_DAYS)).order("expires_on").limit(5)
+      : none,
   ]);
-  const todayIso = todayISO();
   const deadlines = (grants ?? [])
     .map((g) => {
       const next = nextDeadline(g as { status: GrantStatus; application_deadline: string | null; justification_deadline: string | null });
@@ -162,6 +180,47 @@ export default async function AdminHome({
                   </span>
                 </li>
               ))}
+            </ol>
+          </section>
+        )}
+
+        {can("events.read") && (events ?? []).length > 0 && (
+          <section className={s.block} aria-labelledby="actividades">
+            <header className={s.blockHead}>
+              <h2 id="actividades" className={s.blockTitle}>Próximas actividades</h2>
+              <Link href="/admin/calendario" className={s.linkButton}>Calendario</Link>
+            </header>
+            <ol className={s.deadlines}>
+              {(events ?? []).map((e) => (
+                <li key={e.id}>
+                  <span className={s.deadlineDate}>{formatDate(e.starts_on, { day: "numeric", month: "short" })}</span>
+                  <Link href={`/admin/calendario/${e.id}`} className={`${s.rowLink} ${s.deadlineWhat}`}>{e.title}</Link>
+                  <span className={s.deadlineDays}>{e.start_time?.slice(0, 5) ?? ""}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {can("documents.read") && (docs ?? []).length > 0 && (
+          <section className={s.block} aria-labelledby="caducan">
+            <header className={s.blockHead}>
+              <h2 id="caducan" className={s.blockTitle}>Documentos que caducan</h2>
+              <Link href="/admin/documentos" className={s.linkButton}>Documentos</Link>
+            </header>
+            <ol className={s.deadlines}>
+              {(docs ?? []).map((d) => {
+                const exp = expiryStatus(d.expires_on, todayIso);
+                return (
+                  <li key={d.id}>
+                    <span className={s.deadlineDate}>{formatDate(d.expires_on, { day: "numeric", month: "short" })}</span>
+                    <Link href="/admin/documentos" className={`${s.rowLink} ${s.deadlineWhat}`}>{d.name}</Link>
+                    <span className={s.deadlineDays} data-soon={(exp.days ?? 0) <= 21 ? "" : undefined}>
+                      {exp.days !== null && exp.days >= 0 ? `${exp.days} d` : "caducado"}
+                    </span>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         )}

@@ -27,6 +27,11 @@ const tableLabels: Record<string, string> = {
   grant_documents: "Archivos de subvención",
   league_entries: "Liga",
   email_templates: "Plantillas de correo",
+  club_documents: "Documentos del club",
+  events: "Actividades",
+  event_signups: "Inscripciones",
+  gear_items: "Material",
+  gear_loans: "Préstamos de material",
 };
 const actionLabels: Record<string, string> = { insert: "Alta", update: "Cambio", delete: "Borrado" };
 const IGNORED = new Set(["updated_at", "created_at", "id"]);
