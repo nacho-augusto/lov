@@ -1488,3 +1488,25 @@ a.figure:hover .figureLabel {
   white-space: pre-wrap;
   line-height: 1.55;
 }
+
+/* ---- Member portal (/socio): the panel's pieces in a single column ---- */
+
+.portal {
+  max-width: 980px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px 16px 56px;
+}
+
+.portalTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.portalTop img {
+  width: 150px;
+  height: auto;
+}

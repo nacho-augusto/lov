@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Refreshes the Supabase session cookie on admin routes (Server Components can't
+// Refreshes the Supabase session cookie on admin and member-portal routes (Server Components can't
 // write cookies). This is not the authorization check: every admin page and action
 // re-checks the user and permissions server-side, and RLS backs them in the database.
 export async function proxy(request: NextRequest) {
@@ -29,10 +29,13 @@ export async function proxy(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
 
   const { pathname } = request.nextUrl;
-  const isPublic = pathname.startsWith("/admin/login") || pathname.startsWith("/admin/auth") || pathname.startsWith("/admin/sin-acceso");
+  const portal = pathname === "/socio" || pathname.startsWith("/socio/");
+  const isPublic = portal
+    ? pathname.startsWith("/socio/entrar") || pathname.startsWith("/socio/auth")
+    : pathname.startsWith("/admin/login") || pathname.startsWith("/admin/auth") || pathname.startsWith("/admin/sin-acceso");
   if (!data?.claims && !isPublic) {
     const url = request.nextUrl.clone();
-    url.pathname = "/admin/login";
+    url.pathname = portal ? "/socio/entrar" : "/admin/login";
     url.search = "";
     return NextResponse.redirect(url);
   }
@@ -41,5 +44,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/socio", "/socio/:path*"],
 };

@@ -74,7 +74,7 @@ export default async function AuditPage() {
               return (
                 <tr key={r.id}>
                   <td className={s.adminMeta}>{when.format(new Date(r.at))}</td>
-                  <td>{r.actor ? who.get(r.actor) ?? "Administrador retirado" : "Sistema"}</td>
+                  <td>{r.actor ? who.get(r.actor) ?? (r.table_name === "event_signups" ? "Socio desde su zona" : "Administrador retirado") : "Sistema"}</td>
                   <td>
                     <span className={s.strong}>{actionLabels[r.action] ?? r.action}</span> · {tableLabels[r.table_name] ?? r.table_name}
                   </td>
