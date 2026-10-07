@@ -16,6 +16,7 @@ function navFor(admin: AdminSession): NavItem[] {
     { label: "Subvenciones", href: "/admin/subvenciones", show: can("grants.read") },
     { label: "Liga interna", href: "/admin/liga", show: can("league.read") },
     { label: "Comunicaciones", href: "/admin/comunicaciones", show: can("comms.read") },
+    { label: "Categorías y trámites", href: "/admin/ajustes/listas", show: can("accounts.write") || can("members.write") },
     { label: "Administradores", href: "/admin/ajustes/administradores", show: can("admins.manage") },
     { label: "Registro de cambios", href: "/admin/ajustes/registro", show: can("audit.read") },
   ];
