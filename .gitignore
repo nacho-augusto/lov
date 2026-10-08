@@ -41,3 +41,16 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# --- Secrets: never commit (added by env audit 2026-10-08) ---
+.env
+.env.*
+*.env
+!.env.example
+!.env.*.example
+!.env.template
+!*.env.example
+.dev.vars*
+*.pem
+*.p12
+*.pfx
